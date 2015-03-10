@@ -174,9 +174,12 @@ public class DojoRenderer extends GLCanvas{
         radius = 25;
         theta=15;
         phi= 300;
-        xPos=getCoordX(radius, phi, theta);
-        yPos=getCoordY(radius,phi,theta);
-        zPos=getCoordZ(radius,phi);
+//        xPos=getCoordX(radius, phi, theta);
+//        yPos=getCoordY(radius,phi,theta);
+//        zPos=getCoordZ(radius,phi);
+	      xo=getCoordX(radius, phi, theta);
+	      yo=getCoordY(radius,phi,theta);
+	      zo=getCoordZ(radius,phi);
         xUp=getCoordX(radius,phi+90,theta);
         yUp=getCoordY(radius,phi+90,theta);
         zUp=getCoordZ(radius,phi+90);
