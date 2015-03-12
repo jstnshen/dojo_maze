@@ -18,7 +18,7 @@ import com.sun.opengl.util.GLUT;
 
 
 public class DojoRenderer extends GLCanvas{
-    public static final float SENSITIVITY= 6; //higher number = more sensitive mouse movement
+    public static final float SENSITIVITY= 2; //higher number = more sensitive mouse movement
     public static final int NUM_SQUARE = 3; //number of smaller squares along the side of each wall
     public static final float SUN_SIZE= 10.0f; //size of the radius of the sun
     public static final float ENVIRONMENT_SIZE = 500f;//size of the "radius" of the sky
@@ -50,26 +50,29 @@ public class DojoRenderer extends GLCanvas{
                 if(e.getKeyChar() =='r'){ //reset the camera to original setting
                     reset();
                 }
-                if(e.getKeyChar() == 'w'){ //move camera in the x direction
-                    if(xo-xPos != 0) xo+= (xo-xPos) / Math.abs(xo-xPos);
-                    updateCamera();
-                    System.out.println("xo: "+ xo);
-                }
-                if(e.getKeyChar() == 's'){ //move camera in the x direction
-                    if(xo-xPos != 0) xo-=(xo-xPos) / Math.abs(xo-xPos);
-                    updateCamera();
-                    System.out.println("xo: "+ xo);
-                }
-                if(e.getKeyChar() == 'd'){ //move camera in the y direction
-                    if(yo-yPos != 0) yo+= (yo-yPos) / Math.abs(yo-yPos);
-                    updateCamera();
-                    System.out.println("yo: "+ yo);
-                }
-                if(e.getKeyChar() == 'a'){ //move camera in the y direction
-                    if(yo-yPos != 0) yo-= (yo-yPos) / Math.abs(yo-yPos);
-                    updateCamera();
-                    System.out.println("yo: "+ yo);
-                }
+                double dx=xo-xPos;//lets the camera move front and back around the room
+				double dy=yo-yPos;
+				double dz=zo-zPos;
+				System.out.println(dx+"dx");
+				double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+				if(e.getKeyCode()==KeyEvent.VK_A){//move forward
+					xPos+=dx/dist*radius/3;
+					yPos+=dy/dist*radius/3;
+					zPos+=dz/dist*radius/3;
+					updateCamera();
+				}
+				if(e.getKeyCode()==KeyEvent.VK_D){//move backward
+					xPos-=dx/dist*radius/3;
+					yPos-=dy/dist*radius/3;
+					zPos-=dz/dist*radius/3;
+					updateCamera();
+				}
+				if(e.getKeyCode()==KeyEvent.VK_ESCAPE){//quit
+					System.exit(1);
+				}
+                
+                
+                
                 if(e.getKeyChar() == 'q'){ //move camera in the z direction
                     if(zo-zPos != 0) zo-= (zo-zPos) / Math.abs(zo-zPos);
                     updateCamera();
@@ -107,7 +110,7 @@ public class DojoRenderer extends GLCanvas{
                     theta-=SENSITIVITY*(me.getX()-prevX)/Math.abs((me.getX()-prevX)); //increase the number of degrees to rotate
                 prevX=me.getX();
                 if(Math.abs(me.getY()-prevY) !=0)
-                    phi+=SENSITIVITY*(me.getY()-prevY)/Math.abs((me.getY()-prevY));
+                    phi-=SENSITIVITY*(me.getY()-prevY)/Math.abs((me.getY()-prevY));
                 prevY=me.getY();
                 updateCamera();
             }
@@ -172,19 +175,18 @@ public class DojoRenderer extends GLCanvas{
     public void reset(){
     	isDay=true;
         radius = 25;
-        theta=15;
-        phi= 300;
-//        xPos=getCoordX(radius, phi, theta);
-//        yPos=getCoordY(radius,phi,theta);
-//        zPos=getCoordZ(radius,phi);
-	      xo=getCoordX(radius, phi, theta);
-	      yo=getCoordY(radius,phi,theta);
-	      zo=getCoordZ(radius,phi);
+        theta=0;
+        phi= 270;
+        xPos=0; yPos=0; zPos = 15;
+        xo=getCoordX(radius, phi, theta)+xPos;
+        yo=getCoordY(radius,phi,theta)+yPos;
+        zo=getCoordZ(radius,phi)+zPos;
+	     
         xUp=getCoordX(radius,phi+90,theta);
         yUp=getCoordY(radius,phi+90,theta);
         zUp=getCoordZ(radius,phi+90);
         prevX=0; prevY=0;
-        xo=0; yo=0; zo = 0;
+
     }
     /**
      * returns the x coordinate in terms of the distance and angles given (spherical coordinate) 
@@ -222,9 +224,9 @@ public class DojoRenderer extends GLCanvas{
      * update the position vector and up vector of the camera 
      */
     public void updateCamera(){
-        xPos=getCoordX(radius, phi, theta)+xo;
-        yPos=getCoordY(radius,phi,theta)+yo;
-        zPos=getCoordZ(radius,phi)+zo;
+        xo=getCoordX(radius, phi, theta)+xPos;
+        yo=getCoordY(radius,phi,theta)+yPos;
+        zo=getCoordZ(radius,phi)+zPos;
         xUp=getCoordX(radius,phi+90,theta);
         yUp=getCoordY(radius,phi+90,theta);
         zUp=getCoordZ(radius,phi+90);
