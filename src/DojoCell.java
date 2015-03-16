@@ -1,23 +1,23 @@
+import java.util.LinkedList;
 
-public class DojoCell extends DojoObject{
-	private double[] startCoord;
-	private double[] endCoord;
-	public DojoCell(){
-		super();
-		startCoord = new double[]{0,0,0};
-		endCoord = new double[] {1,1,1};
+public class DojoCell extends DojoObject implements Comparable{
+	double x,y,width,height=0;
+	LinkedList<DojoCell> list=new LinkedList<DojoCell>();
+	public DojoCell(double x,double y, double width, double height){
+		this.x=x;
+		this.y=y;
+		this.width=width;
+		this.height=height;
+	}public void create(){
+		list.add(this);
 	}
-	public double[] getStartCoord() {
-		return startCoord;
+	@Override
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		if(o==null)return 1;
+		if(x==((DojoCell)o).x&&y==((DojoCell)o).y&&width==((DojoCell)o).width&&height==((DojoCell)o).height){
+			return 0;
+		}else return -1;
 	}
-	public void setStartCoord(double[] startCoord) {
-		this.startCoord = startCoord;
-	}
-	public double[] getEndCoord() {
-		return endCoord;
-	}
-	public void setEndCoord(double[] endCoord) {
-		this.endCoord = endCoord;
-	}
-	
 }
+	

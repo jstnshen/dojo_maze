@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -16,7 +17,19 @@ import javax.swing.JFrame;
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.GLUT;
 
-
+/*
+ * TODO update mouse movement and key movement at the same time
+ * make enemy intelligent
+ * put traps
+ * design mini-puzzle
+ * add inventory
+ * add torch/ tracking
+ * add minimap
+ * get rid of mouse drag
+ * restrict z movement
+ * collision detection (learn gl pickering)
+ * continuous movement
+ */
 public class DojoRenderer extends GLCanvas{
     public static final float SENSITIVITY= 2; //higher number = more sensitive mouse movement
     public static final int NUM_SQUARE = 3; //number of smaller squares along the side of each wall
@@ -30,6 +43,8 @@ public class DojoRenderer extends GLCanvas{
     private float theta, phi; //angular position of the camera
     private float radius; //distant the camera is set from the camera look at position
 
+    private KruskyKrab maze;
+    private ArrayList<DojoEnemy> enemies;
     private float size; //size of the terrain
     private boolean isDay;
     /**
@@ -40,8 +55,21 @@ public class DojoRenderer extends GLCanvas{
         super(glCap);
         anim = new Animator(this);
         reset();
-
         generateMaze();
+        //ez
+        for(int i=0;i<2*maze.n;i++){
+        	int ran=(int)(Math.random()*2*maze.n*(maze.n+1));
+        	if(!maze.edges[ran].joined){
+        		maze.edges[ran].joined=true;
+        	}else{
+        		i--;
+        	}
+        }
+        //
+        enemies = new ArrayList<DojoEnemy> ();
+        int rand=(int)(Math.random()*maze.n*maze.n);
+        enemies.add(new DojoEnemy(maze.size/4,maze.cells[rand].x+maze.cells[rand].width/2,maze.cells[rand].y+maze.cells[rand].height/2,maze.size/2));
+        System.out.println(rand);
         addKeyListener(new KeyAdapter(){//create a new KeyAdapter to add as a KeyListener
             @Override
             public void keyPressed(KeyEvent e){
@@ -55,13 +83,13 @@ public class DojoRenderer extends GLCanvas{
 				double dz=zo-zPos;
 				System.out.println(dx+"dx");
 				double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
-				if(e.getKeyCode()==KeyEvent.VK_A){//move forward
+				if(e.getKeyCode()==KeyEvent.VK_W){//move forward
 					xPos+=dx/dist*radius/3;
 					yPos+=dy/dist*radius/3;
 					zPos+=dz/dist*radius/3;
 					updateCamera();
 				}
-				if(e.getKeyCode()==KeyEvent.VK_D){//move backward
+				if(e.getKeyCode()==KeyEvent.VK_S){//move backward
 					xPos-=dx/dist*radius/3;
 					yPos-=dy/dist*radius/3;
 					zPos-=dz/dist*radius/3;
@@ -114,6 +142,17 @@ public class DojoRenderer extends GLCanvas{
                 prevY=me.getY();
                 updateCamera();
             }
+            
+            //
+            public void mouseMoved(MouseEvent me){
+            if(Math.abs(me.getX()-prevX) !=0)
+                theta-=SENSITIVITY*(me.getX()-prevX)/Math.abs((me.getX()-prevX)); //increase the number of degrees to rotate
+            prevX=me.getX();
+            if(Math.abs(me.getY()-prevY) !=0)
+                phi-=SENSITIVITY*(me.getY()-prevY)/Math.abs((me.getY()-prevY));
+            prevY=me.getY();
+            updateCamera();
+        }
         });
         addMouseWheelListener(new MouseWheelListener(){
             @Override
@@ -242,8 +281,14 @@ public class DojoRenderer extends GLCanvas{
         myGLU.gluLookAt(xPos,yPos,zPos,xo,yo,zo, xUp, yUp, zUp); //the up x,y,z is 90 offset from the camera's position
         myGL.glPushMatrix();
         createEnvironment(myGL);
-      
-
+        myGL.glPushMatrix();
+    	myGL.glTranslated(-maze.n*maze.size/2, -maze.n*maze.size/2,0);
+        drawMaze(myGL);
+        myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0); //set the color maze
+        for(int i=0; i<enemies.size(); i++){
+        	enemies.get(i).draw(myGL);
+        }
+        myGL.glPopMatrix();
         
     }
     public static void main(String[] args){
@@ -293,7 +338,7 @@ public class DojoRenderer extends GLCanvas{
      * create new maze
      */
     public void generateMaze(){
-    	
+    	maze= new KruskyKrab(10,30);
     }
 
     /**
@@ -334,6 +379,14 @@ public class DojoRenderer extends GLCanvas{
         //reset emission property
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, new float[]{0, 0, 0, 1f}, 0);
         myGL.glPopMatrix();
-    }
+    }public void drawMaze(GL myGL){
+    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,0f,1f},0); //set the color maze
+    	
+		for(int i=0;i<maze.edges.length;i++){
+			if(!maze.edges[i].joined){
+				maze.edges[i].draw(myGL);
+			}
+		}
+	}
 
 }

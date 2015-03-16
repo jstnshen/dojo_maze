@@ -1,5 +1,7 @@
 import javax.media.opengl.GL;
 
+import com.sun.opengl.util.GLUT;
+
 
 public class DojoEnemy extends DojoObject{
 	public static final int DOJO_ENEMY_BASIC = 0;
@@ -9,13 +11,14 @@ public class DojoEnemy extends DojoObject{
 	private int damage;
 	private int health;
 	private int type;
-	public DojoEnemy(){
+	public DojoEnemy(double radius, double x, double y, double z){
 		super();
 		xDirection=1;
 		yDirection =0 ;
 		zDirection=0;
+		setPosition(new double[]{x,y,z});
 		speed = 1;
-		length= 1;
+		length= radius;//this will be default radus of the basic enemy
 		width = 1;
 		height= 1;
 		damage=9001;
@@ -87,6 +90,11 @@ public class DojoEnemy extends DojoObject{
 	}
 	@Override
 	public void draw(GL myGL){
+		GLUT myGLUT = new GLUT();
+		myGL.glPushMatrix();
+		myGL.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
+		myGLUT.glutSolidSphere(length, 50, 50);
+		myGL.glPopMatrix();
 		
 	}
 

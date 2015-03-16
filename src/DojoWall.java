@@ -3,32 +3,24 @@ import java.awt.Color;
 import javax.media.opengl.GL;
 
 
+
+
 public class DojoWall extends DojoObject{
-	private double[] startCoord;
-	private double[] endCoord;
-	private Color color;
-	public DojoWall(){
-		super();
-		startCoord = new double[]{0,0,0};
-		endCoord = new double[]{0,0,0};
-		color= new Color(1,1,1);
+
+	Color color;
+	double x1,x2,y1,y2,length=0;
+	DojoCell c1,c2;
+	boolean joined=false;
+	public DojoWall(double x, double y, double x2, double y2,DojoCell c1, DojoCell c2,double length){
+		x1=x;
+		this.x2=x2;
+		y1=y;
+		this.y2=y2;
+		this.c1=c1;this.c2=c2;
+		color = new Color(0,0,0);
+		this.length=length;
 	}
 	
-	public double[] getStartCoord() {
-		return startCoord;
-	}
-
-	public void setStartCoord(double[] startCoord) {
-		this.startCoord = startCoord;
-	}
-
-	public double[] getEndCoord() {
-		return endCoord;
-	}
-
-	public void setEndCoord(double[] endCoord) {
-		this.endCoord = endCoord;
-	}
 
 	public Color getColor() {
 		return color;
@@ -39,6 +31,12 @@ public class DojoWall extends DojoObject{
 	}
 
 	public void draw(GL myGL){
-		
+		//g.drawLine((int)maze.edges[i].x1, (int)maze.edges[i].y1, (int)maze.edges[i].x2, (int)maze.edges[i].y2);	
+		myGL.glBegin(GL.GL_QUADS);
+		myGL.glVertex3d(x1, y1, 0);
+		myGL.glVertex3d(x1, y1, length);
+		myGL.glVertex3d(x2, y2, length);
+		myGL.glVertex3d(x2, y2, 0);
+		myGL.glEnd();
 	}
 }
