@@ -320,19 +320,13 @@ public class DojoRenderer extends GLCanvas{
         }
         myGL.glPopMatrix();
         
-        if(currentX-CENTER_X >150){
-        	//pan right
-        	System.out.println(theta);
-        	theta-= (double)(currentX-CENTER_X-150)/150 * 2.0;
-        }else if(currentX-CENTER_X <-150){
-        	//pan left
-        	theta-= (double)(currentX-CENTER_X+150)/150 * 2.0;
-        }if(currentY-CENTER_Y >150){
-        	//pan down
-        	phi-= (double)(currentY-CENTER_Y-150)/150 * 2.0;
-        }else if(currentY-CENTER_Y <-150){
-        	//pan up
-        	phi-= (double)(currentY-CENTER_Y+150)/150 * 2.0;
+        if(Math.abs(currentX-CENTER_X) >100){
+        	//pan horizontal
+        	theta-= (double)((currentX-CENTER_X-Math.signum(currentX-CENTER_X)*100)/100 * 2.0);
+        }
+        if(Math.abs(currentY-CENTER_Y) >100){
+        	//pan vertical
+        	phi-= (double)(currentY-CENTER_Y-Math.signum(currentY-CENTER_Y)*100)/100 * 2.0;
         }
         for(int i=0;i<down.length;i++){
         	if(down[i] == KeyEvent.VK_ESCAPE)//quit
