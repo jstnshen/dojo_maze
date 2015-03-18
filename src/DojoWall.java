@@ -5,6 +5,7 @@ import javax.media.opengl.GL;
 
 
 
+
 public class DojoWall extends DojoObject{
 
 	Color color;
@@ -32,7 +33,15 @@ public class DojoWall extends DojoObject{
 
 	public void draw(GL myGL){
 		//g.drawLine((int)maze.edges[i].x1, (int)maze.edges[i].y1, (int)maze.edges[i].x2, (int)maze.edges[i].y2);	
-		myGL.glBegin(GL.GL_QUADS);
+		 //calculate the normal vector for each vertices of the side
+		float[] u = new float[]{0,-1,0};
+		float[] v = new float[]{-1,0,0};
+ 		myGL.glBegin(GL.GL_QUADS);
+ 		if(x1==x2){
+        	myGL.glNormal3fv(u,0);
+        }else{
+        	myGL.glNormal3fv(v,0);
+        }
 		myGL.glVertex3d(x1, y1, 0);
 		myGL.glVertex3d(x1, y1, length);
 		myGL.glVertex3d(x2, y2, length);

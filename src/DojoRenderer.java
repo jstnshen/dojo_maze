@@ -29,12 +29,15 @@ import com.sun.opengl.util.GLUT;
  * restrict z movement
  * collision detection (learn gl pickering)
  * continuous movement
+ * add normal to the wall
  */
 public class DojoRenderer extends GLCanvas{
     public static final float SENSITIVITY= 2; //higher number = more sensitive mouse movement
     public static final int NUM_SQUARE = 3; //number of smaller squares along the side of each wall
     public static final float SUN_SIZE= 10.0f; //size of the radius of the sun
     public static final float ENVIRONMENT_SIZE = 500f;//size of the "radius" of the sky
+    public static int CENTER_X = 300;
+    public static int CENTER_Y = 300;
     private Animator anim; //animator object used to animate the canvas
     private float xPos,yPos,zPos; //position of the camera
     private float xUp,yUp,zUp; //up position of the camera
@@ -42,7 +45,9 @@ public class DojoRenderer extends GLCanvas{
     private float prevX, prevY; //position of previous mouse location
     private float theta, phi; //angular position of the camera
     private float radius; //distant the camera is set from the camera look at position
-
+    private int currentX; 
+    private int currentY;
+    private int[] down=new int[0];
     private KruskyKrab maze;
     private ArrayList<DojoEnemy> enemies;
     private float size; //size of the terrain
@@ -70,53 +75,81 @@ public class DojoRenderer extends GLCanvas{
         int rand=(int)(Math.random()*maze.n*maze.n);
         enemies.add(new DojoEnemy(maze.size/4,maze.cells[rand].x+maze.cells[rand].width/2,maze.cells[rand].y+maze.cells[rand].height/2,maze.size/2));
         System.out.println(rand);
-        addKeyListener(new KeyAdapter(){//create a new KeyAdapter to add as a KeyListener
-            @Override
-            public void keyPressed(KeyEvent e){
-                if(e.getKeyCode() == KeyEvent.VK_ESCAPE)//quit
-                    System.exit(0); 
-                if(e.getKeyChar() =='r'){ //reset the camera to original setting
-                    reset();
-                }
-                double dx=xo-xPos;//lets the camera move front and back around the room
-				double dy=yo-yPos;
-				double dz=zo-zPos;
-				System.out.println(dx+"dx");
-				double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
-				if(e.getKeyCode()==KeyEvent.VK_W){//move forward
-					xPos+=dx/dist*radius/3;
-					yPos+=dy/dist*radius/3;
-					zPos+=dz/dist*radius/3;
-					updateCamera();
+//        addKeyListener(new KeyAdapter(){//create a new KeyAdapter to add as a KeyListener
+//            @Override
+//            public void keyPressed(KeyEvent e){
+//                if(e.getKeyCode() == KeyEvent.VK_ESCAPE)//quit
+//                    System.exit(0); 
+//                if(e.getKeyChar() =='r'){ //reset the camera to original setting
+//                    reset();
+//                }
+//                double dx=xo-xPos;//lets the camera move front and back around the room
+//				double dy=yo-yPos;
+//				double dz=zo-zPos;
+//				System.out.println(dx+"dx");
+//				double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+//				if(e.getKeyCode()==KeyEvent.VK_W){//move forward
+//					xPos+=dx/dist*radius/3;
+//					yPos+=dy/dist*radius/3;
+//					zPos+=dz/dist*radius/3;
+//					updateCamera();
+//				}
+//				if(e.getKeyCode()==KeyEvent.VK_S){//move backward
+//					xPos-=dx/dist*radius/3;
+//					yPos-=dy/dist*radius/3;
+//					zPos-=dz/dist*radius/3;
+//					updateCamera();
+//				}
+//				if(e.getKeyCode()==KeyEvent.VK_ESCAPE){//quit
+//					System.exit(1);
+//				}
+//                
+//                
+//                
+//                if(e.getKeyChar() == 'q'){ //move camera in the z direction
+//                    if(zo-zPos != 0) zo-= (zo-zPos) / Math.abs(zo-zPos);
+//                    updateCamera();
+//                    System.out.println("zo: "+ zo);
+//                }
+//                if(e.getKeyChar() == 'e'){//move camera in the z direction
+//                    if(zo-zPos != 0) zo+= (zo-zPos) / Math.abs(zo-zPos);
+//                    updateCamera();
+//                    System.out.println("zo: "+ zo);
+//                }
+//                if(e.getKeyChar() == ' '){//turn sun on or off
+//                	isDay = !isDay;
+//                	System.out.println("isDay: "+isDay);
+//                }
+//            }
+//        });
+			this.addKeyListener(new KeyAdapter(){
+						
+				public void keyPressed(KeyEvent e){
+					int[] ndown=new int[down.length+1];
+					boolean adder=true;
+					for(int i=0;i<down.length;i++){
+						if(down[i]==e.getKeyCode()){
+							adder=false;
+						}
+						ndown[i]=down[i];
+					}
+					if(adder){
+						ndown[down.length]=e.getKeyCode();
+						down=ndown;
+					}
+					
+				}public void keyReleased(KeyEvent e){
+					int[] ndown= new int[down.length];
+					int loc=0;
+					for(int i=0;i<down.length;i++){
+						if(e.getKeyCode()!=down[i]){
+							ndown[loc]=down[i];
+							loc++;
+						}
+					}
+					down=ndown;
 				}
-				if(e.getKeyCode()==KeyEvent.VK_S){//move backward
-					xPos-=dx/dist*radius/3;
-					yPos-=dy/dist*radius/3;
-					zPos-=dz/dist*radius/3;
-					updateCamera();
-				}
-				if(e.getKeyCode()==KeyEvent.VK_ESCAPE){//quit
-					System.exit(1);
-				}
-                
-                
-                
-                if(e.getKeyChar() == 'q'){ //move camera in the z direction
-                    if(zo-zPos != 0) zo-= (zo-zPos) / Math.abs(zo-zPos);
-                    updateCamera();
-                    System.out.println("zo: "+ zo);
-                }
-                if(e.getKeyChar() == 'e'){//move camera in the z direction
-                    if(zo-zPos != 0) zo+= (zo-zPos) / Math.abs(zo-zPos);
-                    updateCamera();
-                    System.out.println("zo: "+ zo);
-                }
-                if(e.getKeyChar() == ' '){//turn sun on or off
-                	isDay = !isDay;
-                	System.out.println("isDay: "+isDay);
-                }
-            }
-        });
+			});
         addMouseListener(new MouseAdapter(){ //add mouse listener to the canvas
             @Override
             /**
@@ -133,25 +166,20 @@ public class DojoRenderer extends GLCanvas{
             /**
              * mouseDragged method used to detect mouse drag to adjust the camera position about the center
              */
-            public void mouseDragged(MouseEvent me){
-                if(Math.abs(me.getX()-prevX) !=0)
-                    theta-=SENSITIVITY*(me.getX()-prevX)/Math.abs((me.getX()-prevX)); //increase the number of degrees to rotate
-                prevX=me.getX();
-                if(Math.abs(me.getY()-prevY) !=0)
-                    phi-=SENSITIVITY*(me.getY()-prevY)/Math.abs((me.getY()-prevY));
-                prevY=me.getY();
-                updateCamera();
-            }
+ 
             
             //
             public void mouseMoved(MouseEvent me){
-            if(Math.abs(me.getX()-prevX) !=0)
-                theta-=SENSITIVITY*(me.getX()-prevX)/Math.abs((me.getX()-prevX)); //increase the number of degrees to rotate
-            prevX=me.getX();
-            if(Math.abs(me.getY()-prevY) !=0)
-                phi-=SENSITIVITY*(me.getY()-prevY)/Math.abs((me.getY()-prevY));
-            prevY=me.getY();
-            updateCamera();
+            	
+            	currentX = me.getX();
+            	currentY = me.getY();
+//	            if(Math.abs(me.getX()-prevX) !=0)
+//	                theta-=SENSITIVITY*(me.getX()-prevX)/Math.abs((me.getX()-prevX)); //increase the number of degrees to rotate
+//	            prevX=me.getX();
+//	            if(Math.abs(me.getY()-prevY) !=0)
+//	                phi-=SENSITIVITY*(me.getY()-prevY)/Math.abs((me.getY()-prevY));
+//	            prevY=me.getY();
+//	            updateCamera();
         }
         });
         addMouseWheelListener(new MouseWheelListener(){
@@ -220,6 +248,8 @@ public class DojoRenderer extends GLCanvas{
         xo=getCoordX(radius, phi, theta)+xPos;
         yo=getCoordY(radius,phi,theta)+yPos;
         zo=getCoordZ(radius,phi)+zPos;
+        currentX= 300;
+        currentY = 300;
 	     
         xUp=getCoordX(radius,phi+90,theta);
         yUp=getCoordY(radius,phi+90,theta);
@@ -290,6 +320,54 @@ public class DojoRenderer extends GLCanvas{
         }
         myGL.glPopMatrix();
         
+        if(currentX-CENTER_X >150){
+        	//pan right
+        	System.out.println(theta);
+        	theta-= (double)(currentX-CENTER_X-150)/150 * 2.0;
+        }else if(currentX-CENTER_X <-150){
+        	//pan left
+        	theta-= (double)(currentX-CENTER_X+150)/150 * 2.0;
+        }if(currentY-CENTER_Y >150){
+        	//pan down
+        	phi-= (double)(currentY-CENTER_Y-150)/150 * 2.0;
+        }else if(currentY-CENTER_Y <-150){
+        	//pan up
+        	phi-= (double)(currentY-CENTER_Y+150)/150 * 2.0;
+        }
+        for(int i=0;i<down.length;i++){
+        	if(down[i] == KeyEvent.VK_ESCAPE)//quit
+               System.exit(0); 
+          	if(down[i] == KeyEvent.VK_R){ //reset the camera to original setting
+               reset();
+          	}
+           double dx=xo-xPos;//lets the camera move front and back around the room
+			double dy=yo-yPos;
+			double dz=zo-zPos;
+			System.out.println(dx+"dx");
+			double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+			if(down[i]==KeyEvent.VK_W){//move forward
+				xPos+=dx/dist*radius/30;
+				yPos+=dy/dist*radius/30;
+				zPos+=dz/dist*radius/30;
+				updateCamera();
+			}
+			if(down[i]==KeyEvent.VK_S){//move backward
+				xPos-=dx/dist*radius/30;
+				yPos-=dy/dist*radius/30;
+				zPos-=dz/dist*radius/30;
+				updateCamera();
+			}
+			if(down[i]==KeyEvent.VK_ESCAPE){//quit
+				System.exit(1);
+			}
+			if(down[i] == KeyEvent.VK_SPACE){//turn sun on or off
+				isDay = !isDay;
+				System.out.println("isDay: "+isDay);
+			}
+        }
+        updateCamera();
+        
+        
     }
     public static void main(String[] args){
         JFrame frame= new JFrame("Dojo Entertainment"); //create frame
@@ -338,7 +416,7 @@ public class DojoRenderer extends GLCanvas{
      * create new maze
      */
     public void generateMaze(){
-    	maze= new KruskyKrab(10,30);
+    	maze= new KruskyKrab(30,30);
     }
 
     /**
@@ -356,7 +434,7 @@ public class DojoRenderer extends GLCanvas{
 	        myGL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT,new float[]{1f, 1f, 1f, 1f} , 0);
 	        myGL.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE,new float[]{1f, 1f, 1f, 1f} , 0);
 	        myGL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION,
-	                new float[]{-ENVIRONMENT_SIZE * (float)Math.cos(Math.PI/25), 0, ENVIRONMENT_SIZE * (float)Math.sin(Math.PI/25)-SUN_SIZE, 1f}, 0);
+	                new float[]{ENVIRONMENT_SIZE * (float)Math.cos(Math.PI/3*2), 0, ENVIRONMENT_SIZE * (float)Math.sin(Math.PI/3*2)-SUN_SIZE, 1f}, 0);
 	        myGL.glLightf(GL.GL_LIGHT0, GL.GL_QUADRATIC_ATTENUATION, (float)Math.pow(ENVIRONMENT_SIZE, -2)); //smaller value = less dramatic attenuation
         }
         
@@ -370,7 +448,7 @@ public class DojoRenderer extends GLCanvas{
         //create a spherical sun
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,.5f,1f,1f},0); //set the color of the sky
         myGLUT.glutSolidSphere(ENVIRONMENT_SIZE,100,100);//draw sky
-        myGL.glTranslatef(-ENVIRONMENT_SIZE * (float)Math.cos(Math.PI/25), 0, ENVIRONMENT_SIZE * (float)Math.sin(Math.PI/25)-SUN_SIZE);
+        myGL.glTranslatef(ENVIRONMENT_SIZE * (float)Math.cos(Math.PI/3*2), 0, ENVIRONMENT_SIZE * (float)Math.sin(Math.PI/3*2)-SUN_SIZE);
         //create a sky using sphere
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,1f,0f,1f},0); //set color of the sun to yellow
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, new float[]{1f,1f,0f,1f}, 0); 
@@ -379,12 +457,13 @@ public class DojoRenderer extends GLCanvas{
         //reset emission property
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, new float[]{0, 0, 0, 1f}, 0);
         myGL.glPopMatrix();
-    }public void drawMaze(GL myGL){
-    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,0f,1f},0); //set the color maze
+    	}
+    	public void drawMaze(GL myGL){
+    		myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,0f,1f},0); //set the color maze
     	
-		for(int i=0;i<maze.edges.length;i++){
-			if(!maze.edges[i].joined){
-				maze.edges[i].draw(myGL);
+    		for(int i=0;i<maze.edges.length;i++){
+    			if(!maze.edges[i].joined){
+    				maze.edges[i].draw(myGL);
 			}
 		}
 	}

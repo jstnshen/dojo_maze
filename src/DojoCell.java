@@ -13,7 +13,6 @@ public class DojoCell extends DojoObject implements Comparable{
 	}
 	@Override
 	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
 		if(o==null)return 1;
 		if(x==((DojoCell)o).x&&y==((DojoCell)o).y&&width==((DojoCell)o).width&&height==((DojoCell)o).height){
 			return 0;
