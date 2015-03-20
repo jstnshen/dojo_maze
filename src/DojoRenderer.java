@@ -50,6 +50,7 @@ public class DojoRenderer extends GLCanvas{
     private int[] down=new int[0];
     private KruskyKrab maze;
     private ArrayList<DojoEnemy> enemies;
+    private ArrayList<DojoTrap> traps;
     private float size; //size of the terrain
     private boolean isDay;
     /**
@@ -72,9 +73,13 @@ public class DojoRenderer extends GLCanvas{
         }
         //
         enemies = new ArrayList<DojoEnemy> ();
-        int rand=(int)(Math.random()*maze.n*maze.n);
+        traps = new ArrayList<DojoTrap>();
+        int rand= 565; //(int)(Math.random()*maze.n*maze.n);
         enemies.add(new DojoEnemy(maze.size/4,maze.cells[rand].x+maze.cells[rand].width/2,maze.cells[rand].y+maze.cells[rand].height/2,maze.size/2));
         System.out.println(rand);
+        
+       // rand=(int)(Math.random()*maze.n*maze.n);
+        traps.add(new DojoTrap(maze.size, maze.cells[rand].x, maze.cells[rand].y, 10));
 //        addKeyListener(new KeyAdapter(){//create a new KeyAdapter to add as a KeyListener
 //            @Override
 //            public void keyPressed(KeyEvent e){
@@ -193,7 +198,7 @@ public class DojoRenderer extends GLCanvas{
                 if(change !=0) radius+=change /Math.abs(change); 
                 //update camera position
                 updateCamera();
-                System.out.println(radius);
+
             }
         });
         addGLEventListener(new GLEventListener(){ //add GL event listener to the canvas
@@ -313,10 +318,13 @@ public class DojoRenderer extends GLCanvas{
         createEnvironment(myGL);
         myGL.glPushMatrix();
     	myGL.glTranslated(-maze.n*maze.size/2, -maze.n*maze.size/2,0);
-        drawMaze(myGL);
+        //drawMaze(myGL);
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0); //set the color maze
-        for(int i=0; i<enemies.size(); i++){
-        	enemies.get(i).draw(myGL);
+        for(int i=0; i< enemies.size(); i++){
+        	//enemies.get(i).draw(myGL);
+        }
+        for(int i=0; i<traps.size(); i++){
+        	traps.get(i).draw(myGL);
         }
         myGL.glPopMatrix();
         
@@ -337,7 +345,6 @@ public class DojoRenderer extends GLCanvas{
            double dx=xo-xPos;//lets the camera move front and back around the room
 			double dy=yo-yPos;
 			double dz=zo-zPos;
-			System.out.println(dx+"dx");
 			double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
 			if(down[i]==KeyEvent.VK_W){//move forward
 				xPos+=dx/dist*radius/30;

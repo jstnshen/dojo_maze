@@ -88,11 +88,28 @@ public class DojoEnemy extends DojoObject{
 	public void attack(DojoPlayer p){
 		
 	}
-	@Override
+
 	public void draw(GL myGL){
-		GLUT myGLUT = new GLUT();
+//		System.out.println(getPosition()[0]+" "+getPosition()[1]+" "+ getPosition()[2]);
+//		myGL.glBegin(GL.GL_QUADS);
+//		myGL.glVertex3d(getPosition()[0],getPosition()[1], getPosition()[2]);
+//		myGL.glVertex3d(getPosition()[0]+getSize(),getPosition()[1], getPosition()[2]);
+//		myGL.glVertex3d(getPosition()[0]+getSize(),getPosition()[1]+getSize(), getPosition()[2]);
+//		myGL.glVertex3d(getPosition()[0],getPosition()[1]+getSize(), getPosition()[2]);
+//		
+//		myGL.glEnd();
+//   //     myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,0f,0f,1f},0); 
+//		myGL.glPushMatrix();
+//	//	myGL.glScaled(25, 25, 25);
+//		myGL.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
+//		GLUT myGLUT = new GLUT();
+//		myGLUT.glutSolidSphere(getSize(), 100, 100);
+//		myGL.glPopMatrix();
+		
+		
 		myGL.glPushMatrix();
 		myGL.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
+		GLUT myGLUT = new GLUT();
 		myGLUT.glutSolidSphere(length, 50, 50);
 		myGL.glPopMatrix();
 		

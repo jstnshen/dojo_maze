@@ -1,5 +1,7 @@
 import javax.media.opengl.GL;
 
+import com.sun.opengl.util.GLUT;
+
 
 public class DojoTrap extends DojoObject{
 	public static final int DOJO_TRAP_BASIC = 0;
@@ -7,19 +9,23 @@ public class DojoTrap extends DojoObject{
 	public static final int DOJO_TRAP_SPIN = 2;
 	
 	private int type;
-	private double length, width;
 	private double activationZone;
 	private long duration;
 	
-	public DojoTrap(){
+//	public DojoTrap(){
+//		super();
+//		type = DOJO_TRAP_BASIC;
+//		duration = 0;
+//		activationZone = 1;
+//	}
+	public DojoTrap(double size, double x, double y, double z){
 		super();
-		type = DOJO_TRAP_BASIC;
-		length = 1;
-		width = 1;
+		setPosition(new double[]{x,y,z}); //x,y,z is the corner of the trap
+		setSize(size); //length of square
 		duration = 0;
 		activationZone = 1;
+		type= DOJO_TRAP_BASIC;
 	}
-
 	
 	public int getType() {
 		return type;
@@ -29,27 +35,6 @@ public class DojoTrap extends DojoObject{
 	public void setType(int type) {
 		this.type = type;
 	}
-
-
-	public double getLength() {
-		return length;
-	}
-
-
-	public void setLength(double length) {
-		this.length = length;
-	}
-
-
-	public double getWidth() {
-		return width;
-	}
-
-
-	public void setWidth(double width) {
-		this.width = width;
-	}
-
 
 	public double getActivationZone() {
 		return activationZone;
@@ -77,9 +62,25 @@ public class DojoTrap extends DojoObject{
 		
 	}
 
-	@Override
+
 	public void draw(GL myGL){ //TODO
-		if(type == DOJO_TRAP_BASIC);
+		if(type == DOJO_TRAP_BASIC){
+		//	System.out.println(getPosition()[0]+" "+getPosition()[1]+" "+ getPosition()[2]);
+			myGL.glBegin(GL.GL_QUADS);
+			myGL.glVertex3d(getPosition()[0],getPosition()[1], getPosition()[2]);
+			myGL.glVertex3d(getPosition()[0]+getSize(),getPosition()[1], getPosition()[2]);
+			myGL.glVertex3d(getPosition()[0]+getSize(),getPosition()[1]+getSize(), getPosition()[2]);
+			myGL.glVertex3d(getPosition()[0],getPosition()[1]+getSize(), getPosition()[2]);
+			
+			myGL.glEnd();
+	   //     myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,0f,0f,1f},0); 
+			myGL.glPushMatrix();
+		//	myGL.glScaled(25, 25, 25);
+			myGL.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
+			GLUT myGLUT = new GLUT();
+			myGLUT.glutSolidSphere(getSize(), 100, 100);
+			myGL.glPopMatrix();
+		};
 		if(type == DOJO_TRAP_SHOOTER);
 		if(type == DOJO_TRAP_SPIN);
 	}
