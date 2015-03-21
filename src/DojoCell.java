@@ -1,14 +1,15 @@
 import java.util.LinkedList;
 
 public class DojoCell extends DojoObject implements Comparable{
-	double x,y,width,height=0;
+	double x,y,width,height=0; 
 	LinkedList<DojoCell> list=new LinkedList<DojoCell>();
 	public DojoCell(double x,double y, double width, double height){
 		this.x=x;
 		this.y=y;
 		this.width=width;
 		this.height=height;
-	}public void create(){
+	}
+	public void create(){
 		list.add(this);
 	}
 	@Override

@@ -5,7 +5,7 @@ import javax.media.opengl.GL;
 import com.sun.opengl.util.texture.Texture;
 
 
-public class DojoObject { //implt Coord class?
+public class DojoObject {
 	private double[] position;
 	private Color color;
 	private Texture tex;
