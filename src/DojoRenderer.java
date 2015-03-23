@@ -1,9 +1,15 @@
+import java.awt.Frame;
+import java.awt.Point;
+import java.awt.Robot;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
@@ -11,11 +17,14 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLException;
 import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.GLUT;
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureIO;
 
 /*
  * TODO update mouse movement and key movement at the same time
@@ -40,6 +49,8 @@ public class DojoRenderer extends GLCanvas{
     private float radius; //distant the camera is set from the camera look at position
     private int currentX; //current x mouse position
     private int currentY; //currnet y mouse position
+    private static DojoMinimap mm;
+    private Texture text;
     private int[] down=new int[0]; //stores keys pressed
     private KruskyKrab maze; //maze object drawn
     private ArrayList<DojoEnemy> enemies; //enemies in the maze
@@ -85,7 +96,7 @@ public class DojoRenderer extends GLCanvas{
                 myGL.glShadeModel(GL.GL_SMOOTH);
                 myGL.glEnable( GL.GL_DEPTH_TEST);
                 myGL.glDepthFunc(GL.GL_LEQUAL);
-
+                loadText(myGL);
             }
             @Override
             public void reshape(GLAutoDrawable drawable, int x, int y,int width, int height) {
@@ -141,9 +152,33 @@ public class DojoRenderer extends GLCanvas{
           addMouseMotionListener(new MouseAdapter(){ //detect mouse motion for panning
               @Override
               public void mouseMoved(MouseEvent me){ //update current location of the mouse in the canvas	
-              	currentX = me.getX();
-              	currentY = me.getY();
+            	  
+
+                  
+//            	  if(Math.abs(currentX-me.getX()) >0){
+//            		  //pan horizontal
+//            		  theta+= (double)((currentX-me.getX()));//-Math.signum(currentX-me.getX())*100)/100 * 2.0);
+//            	  }
+//            	  if(Math.abs(currentY-me.getY()) >0){
+//            		  //pan vertical
+//            		  phi+= (double)(currentY-me.getY());//-Math.signum(currentY-me.getY())*100)/100 * 2.0;
+//            	  }
+            	  currentX = me.getX(); 
+                  currentY = me.getY();
+//                  try{
+//                	  if(Math.abs(currentX-CENTER_X) > 200 || Math.abs(currentY-CENTER_Y) > 200){
+//                		  Robot robot = new Robot();
+//                          robot.mouseMove(CENTER_X,CENTER_Y);
+//                          currentX =CENTER_X;
+//                          currentY= CENTER_Y;
+//                	  }
+//                    
+//
+//                  }catch(Exception ex){
+//                      ex.printStackTrace();
+//                  }
               }
+              
           });
           addMouseWheelListener(new MouseWheelListener(){
               @Override
@@ -252,14 +287,21 @@ public class DojoRenderer extends GLCanvas{
         myGL.glLoadIdentity();
         GLU myGLU= new GLU();
         myGLU.gluLookAt(xPos,yPos,zPos,xo,yo,zo, xUp, yUp, zUp); //the up x,y,z is 90 offset from the camera's position
-       
+        
+
+        
         processEvents();
         
         myGL.glPushMatrix();
         createEnvironment(myGL);
         drawMaze(myGL);
         drawObjects(myGL);
+        
         myGL.glPopMatrix();
+        
+        switchto2D(myGL);
+        drawHUD(myGL);
+        switchto3D(myGL);
         
     }
     public static void main(String[] args){
@@ -270,6 +312,9 @@ public class DojoRenderer extends GLCanvas{
         frame.add(myCanvas);
         //set up frame
         frame.setSize(600, 600);
+        frame.setCursor(frame.getToolkit().createCustomCursor(
+                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+                "null"));
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         myCanvas.requestFocus();
@@ -303,13 +348,13 @@ public class DojoRenderer extends GLCanvas{
             if(down[i]==KeyEvent.VK_W){//move forward
          	   xPos+=dx/dist*radius/30;
          	   yPos+=dy/dist*radius/30;
- 				zPos+=dz/dist*radius/30;
+ 				//zPos+=dz/dist*radius/30;
          	   updateCamera();
             }
             if(down[i]==KeyEvent.VK_S){//move backward
          	   xPos-=dx/dist*radius/30;
          	   yPos-=dy/dist*radius/30;
-         	   zPos-=dz/dist*radius/30;
+         	   //zPos-=dz/dist*radius/30;
          	   updateCamera();
             }
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
@@ -325,6 +370,7 @@ public class DojoRenderer extends GLCanvas{
      * create a new, random maze for the game 
      */
     public void generateMaze(){
+
     	maze= new KruskyKrab(30,30);//generate the initial maze
     	for(int i=0;i<2*maze.n;i++){ //remove some random walls in the existing maze
     		int ran=(int)(Math.random()*2*maze.n*(maze.n+1));
@@ -334,6 +380,7 @@ public class DojoRenderer extends GLCanvas{
 	      		i--;
 	      	}
     	}
+        mm=new DojoMinimap(maze);
     }
 
     /**
@@ -376,14 +423,75 @@ public class DojoRenderer extends GLCanvas{
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, new float[]{0, 0, 0, 1f}, 0);
         myGL.glPopMatrix();
     }
+    public void drawHUD(GL myGL) {
+		// TODO Auto-generated method stub
+		mm.draw(myGL);
+		double px=(maze.n*maze.size/2+xPos)*150d/(maze.n*maze.size)+450;//draws player
+		double py=(maze.n*maze.size/2+yPos)*150d/(maze.n*maze.size)+420;
+		//System.out.println(xPos+" "+yPos);
+		myGL.glColor3f(0f,1f,1f);
+		myGL.glBegin(GL.GL_QUADS);
+		myGL.glVertex2d(px-2.5, py-2.5);
+		myGL.glVertex2d(px-2.5, py+2.5);
+		myGL.glVertex2d(px+2.5, py+2.5);
+		myGL.glVertex2d(px+2.5, py-2.5);
+		myGL.glEnd();
+		for(int i=0;i<enemies.size();i++){
+			//System.out.println(enemies.get(i).getPosition()[0]+" "+enemies.get(i).getPosition()[1]);
+			px=(enemies.get(i).getPosition()[0])*150d/(maze.n*maze.size)+450;
+			py=(enemies.get(i).getPosition()[1])*150d/(maze.n*maze.size)+420;
+			myGL.glColor3f(1f,0f,0f);
+			myGL.glBegin(GL.GL_QUADS);
+			myGL.glVertex2d(px-2.5, py-2.5);
+			myGL.glVertex2d(px-2.5, py+2.5);
+			myGL.glVertex2d(px+2.5, py+2.5);
+			myGL.glVertex2d(px+2.5, py-2.5);
+			myGL.glEnd();
+		}
+		
+	}
+    public void switchto2D(GL gl){
+    	gl.glDisable(GL.GL_DEPTH_TEST);
+    	gl.glMatrixMode(GL.GL_PROJECTION);
+    	gl.glPushMatrix();
+    	gl.glLoadIdentity();
+    	gl.glDisable(gl.GL_LIGHTING);
+    	gl.glOrtho(0, this.getWidth(), 0, this.getHeight(), -1, 1);
+    	gl.glMatrixMode(GL.GL_MODELVIEW);
+    	gl.glLoadIdentity();
+	}
+
+	public void switchto3D(GL gl){
+    	gl.glEnable(GL.GL_DEPTH_TEST);
+    	gl.glMatrixMode(GL.GL_PROJECTION);
+    	gl.glEnable(GL.GL_LIGHTING);
+    	gl.glPopMatrix();
+    	gl.glMatrixMode(GL.GL_MODELVIEW);
+	}
+	public void loadText(GL gl) {
+		// TODO Auto-generated method stub
+		try {
+			text=TextureIO.newTexture(new File("corn2.jpg") , false);
+		} catch (GLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * Draw the maze on the canvas
+	 * @param myGL gl object used to draw the maze
+	 */
     public void drawMaze(GL myGL){
     	myGL.glPushMatrix();
     	myGL.glTranslated(-maze.n*maze.size/2, -maze.n*maze.size/2,0);
-    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,0f,1f},0); //set the color maze
+    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,1f,1f,1f},0); //set the color maze
     	
     	for(int i=0;i<maze.edges.length;i++){
     		if(!maze.edges[i].joined){
-    			maze.edges[i].draw(myGL);
+    			maze.edges[i].draw(myGL,text);
 			}
 		}
     	myGL.glPopMatrix();
