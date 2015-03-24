@@ -57,6 +57,7 @@ public class DojoRenderer extends GLCanvas{
     private ArrayList<DojoTrap> traps;
     private float size; 
     private boolean isDay;
+    private boolean gameEnd = false;
     /**
      * Constructor, initiate the settings the camera and the size of the objects
      * @param glCap
@@ -112,6 +113,10 @@ public class DojoRenderer extends GLCanvas{
         this.addKeyListener(new KeyAdapter(){ //implement KeyAdapter to detect key events
           	@Override
           	public void keyPressed(KeyEvent e){ //stores keys pressed for processing
+          		if(e.getKeyChar() ==' '){
+          			if(anim.isAnimating()) 	anim.stop();
+                	else anim.start();
+				}
           		int[] ndown=new int[down.length+1];
       			boolean adder=true;
   				for(int i=0;i<down.length;i++){
@@ -152,28 +157,31 @@ public class DojoRenderer extends GLCanvas{
           addMouseMotionListener(new MouseAdapter(){ //detect mouse motion for panning
               @Override
               public void mouseMoved(MouseEvent me){ //update current location of the mouse in the canvas	
-            	  
-
-                  
 //            	  if(Math.abs(currentX-me.getX()) >0){
 //            		  //pan horizontal
+//            		  System.out.print("x"+( currentX-me.getX()) +" ");
 //            		  theta+= (double)((currentX-me.getX()));//-Math.signum(currentX-me.getX())*100)/100 * 2.0);
 //            	  }
 //            	  if(Math.abs(currentY-me.getY()) >0){
 //            		  //pan vertical
+//            		  System.out.print("y"+ (currentY-me.getY())+" ");
 //            		  phi+= (double)(currentY-me.getY());//-Math.signum(currentY-me.getY())*100)/100 * 2.0;
 //            	  }
             	  currentX = me.getX(); 
                   currentY = me.getY();
 //                  try{
-//                	  if(Math.abs(currentX-CENTER_X) > 200 || Math.abs(currentY-CENTER_Y) > 200){
-//                		  Robot robot = new Robot();
-//                          robot.mouseMove(CENTER_X,CENTER_Y);
-//                          currentX =CENTER_X;
-//                          currentY= CENTER_Y;
+//                	  Robot robot = new Robot();
+//                	  if(Math.abs(currentX-CENTER_X) > 200){
+//                		  System.out.print(currentX+" yo "+currentY);
+//                		  robot.mouseMove(CENTER_X,currentY);
+//                		  currentX = CENTER_X;
+//                	  }                		      
+//                	  if( Math.abs(currentY-CENTER_Y) > 200){
+//                		  System.out.print(currentX+" yo "+currentY);
+//                		  robot.mouseMove(currentX,CENTER_Y);
+//                		  currentY= CENTER_Y;
 //                	  }
-//                    
-//
+//            		  System.out.println(currentX+" man "+currentY);
 //                  }catch(Exception ex){
 //                      ex.printStackTrace();
 //                  }
@@ -216,6 +224,7 @@ public class DojoRenderer extends GLCanvas{
      * (re)set to the initial settings of the camera
      */
     public void reset(){
+    	gameEnd=false;
         radius = 25;
         theta=0; 
         phi= 270;    
@@ -291,7 +300,15 @@ public class DojoRenderer extends GLCanvas{
 
         
         processEvents();
-        
+        if(Math.abs(xPos)> maze.n*maze.size/2+5 || Math.abs(yPos) > maze.n*maze.size/2+5){
+        //	switchto2D(myGL);
+        	gameEnd = true;
+        	//displayMessage(myGL, "You Win!");
+        	//reset();
+        	//anim.stop();
+        //	switchto3D(myGL);
+        //	anim.
+        }
         myGL.glPushMatrix();
         createEnvironment(myGL);
         drawMaze(myGL);
@@ -303,6 +320,20 @@ public class DojoRenderer extends GLCanvas{
         drawHUD(myGL);
         switchto3D(myGL);
         
+    }
+    public void displayMessage(GL gl, String msg){
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0.0f,0.0f,0.0f,1f},0); 
+		gl.glColor3f(0f, 0f, 0f);
+		gl.glBegin(gl.GL_QUADS);
+		gl.glVertex2d(0, 0);
+		gl.glVertex2d(600, 0);
+		gl.glVertex2d(600, 600);
+		gl.glVertex2d(0,600);
+		gl.glEnd();
+		gl.glColor3f(1f, 1f, 1f);
+		gl.glRasterPos2f(CENTER_X-180, CENTER_Y);
+		GLUT myGLUT= new GLUT();
+		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, msg+"(Press Space to play again)");
     }
     public static void main(String[] args){
         JFrame frame= new JFrame("Dojo Entertainment"); //create frame
@@ -325,11 +356,11 @@ public class DojoRenderer extends GLCanvas{
      */
     public void processEvents(){
     	//process mouse events
-        if(Math.abs(currentX-CENTER_X) >100){
+        if(Math.abs(currentX-CENTER_X) >80){
         	//pan horizontal
         	theta-= (double)((currentX-CENTER_X-Math.signum(currentX-CENTER_X)*100)/100 * 2.0);
         }
-        if(Math.abs(currentY-CENTER_Y) >100){
+        if(Math.abs(currentY-CENTER_Y) >80){
         	//pan vertical
         	phi-= (double)(currentY-CENTER_Y-Math.signum(currentY-CENTER_Y)*100)/100 * 2.0;
         }
@@ -360,9 +391,10 @@ public class DojoRenderer extends GLCanvas{
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
          	   System.exit(1);
             }
-            if(down[i] == KeyEvent.VK_SPACE){//turn sun on or off
-         	   isDay = !isDay;
- 			}
+//            if(down[i] == KeyEvent.VK_SPACE){
+//         	   isDay = !isDay;
+//            	
+// 			}
     	}
     }
   
@@ -424,7 +456,6 @@ public class DojoRenderer extends GLCanvas{
         myGL.glPopMatrix();
     }
     public void drawHUD(GL myGL) {
-		// TODO Auto-generated method stub
 		mm.draw(myGL);
 		double px=(maze.n*maze.size/2+xPos)*150d/(maze.n*maze.size)+450;//draws player
 		double py=(maze.n*maze.size/2+yPos)*150d/(maze.n*maze.size)+420;
@@ -448,7 +479,11 @@ public class DojoRenderer extends GLCanvas{
 			myGL.glVertex2d(px+2.5, py-2.5);
 			myGL.glEnd();
 		}
-		
+		if(gameEnd){
+			displayMessage(myGL, "You Win!");
+			reset();
+        	anim.stop();
+		}
 	}
     public void switchto2D(GL gl){
     	gl.glDisable(GL.GL_DEPTH_TEST);
@@ -469,14 +504,11 @@ public class DojoRenderer extends GLCanvas{
     	gl.glMatrixMode(GL.GL_MODELVIEW);
 	}
 	public void loadText(GL gl) {
-		// TODO Auto-generated method stub
 		try {
 			text=TextureIO.newTexture(new File("corn2.jpg") , false);
 		} catch (GLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
