@@ -57,7 +57,8 @@ public class DojoRenderer extends GLCanvas{
     private ArrayList<DojoTrap> traps;
     private float size; 
     private boolean isDay;
-    private boolean gameEnd = false;
+    private boolean gameWin = false;
+    private boolean gameLost = false;
     /**
      * Constructor, initiate the settings the camera and the size of the objects
      * @param glCap
@@ -213,9 +214,12 @@ public class DojoRenderer extends GLCanvas{
     public void createObjects(){
         enemies = new ArrayList<DojoEnemy> ();
         traps = new ArrayList<DojoTrap>();
-        int rand= (int)(Math.random()*maze.n*maze.n);
-        enemies.add(new DojoEnemy(maze.size/4,maze.cells[rand].x+maze.cells[rand].width/2,maze.cells[rand].y+maze.cells[rand].height/2,maze.size/2));
-        System.out.println(rand);
+        for(int i=0; i< 10; i++){
+        	int rand= (int)(Math.random()*maze.n*maze.n);
+            enemies.add(new DojoEnemy(maze.size/4,maze.cells[rand].x+maze.cells[rand].width/2,maze.cells[rand].y+maze.cells[rand].height/2,maze.size/2));
+            //System.out.println(rand);
+        }
+        
         
        // rand=(int)(Math.random()*maze.n*maze.n);
        // traps.add(new DojoTrap(maze.size, maze.cells[rand].x, maze.cells[rand].y, 10));
@@ -224,7 +228,8 @@ public class DojoRenderer extends GLCanvas{
      * (re)set to the initial settings of the camera
      */
     public void reset(){
-    	gameEnd=false;
+    	gameWin=false;
+    	gameLost= false;
         radius = 25;
         theta=0; 
         phi= 270;    
@@ -296,13 +301,11 @@ public class DojoRenderer extends GLCanvas{
         myGL.glLoadIdentity();
         GLU myGLU= new GLU();
         myGLU.gluLookAt(xPos,yPos,zPos,xo,yo,zo, xUp, yUp, zUp); //the up x,y,z is 90 offset from the camera's position
-        
 
-        
         processEvents();
         if(Math.abs(xPos)> maze.n*maze.size/2+5 || Math.abs(yPos) > maze.n*maze.size/2+5){
         //	switchto2D(myGL);
-        	gameEnd = true;
+        	gameWin = true;
         	//displayMessage(myGL, "You Win!");
         	//reset();
         	//anim.stop();
@@ -333,7 +336,7 @@ public class DojoRenderer extends GLCanvas{
 		gl.glColor3f(1f, 1f, 1f);
 		gl.glRasterPos2f(CENTER_X-180, CENTER_Y);
 		GLUT myGLUT= new GLUT();
-		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, msg+"(Press Space to play again)");
+		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, msg);
     }
     public static void main(String[] args){
         JFrame frame= new JFrame("Dojo Entertainment"); //create frame
@@ -343,9 +346,9 @@ public class DojoRenderer extends GLCanvas{
         frame.add(myCanvas);
         //set up frame
         frame.setSize(600, 600);
-        frame.setCursor(frame.getToolkit().createCustomCursor(
-                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
-                "null"));
+//        frame.setCursor(frame.getToolkit().createCustomCursor(
+//                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+//                "null"));
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         myCanvas.requestFocus();
@@ -377,17 +380,61 @@ public class DojoRenderer extends GLCanvas{
             double dz=zo-zPos;
             double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
             if(down[i]==KeyEvent.VK_W){//move forward
-         	   xPos+=dx/dist*radius/30;
-         	   yPos+=dy/dist*radius/30;
- 				//zPos+=dz/dist*radius/30;
-         	   updateCamera();
-            }
-            if(down[i]==KeyEvent.VK_S){//move backward
-         	   xPos-=dx/dist*radius/30;
-         	   yPos-=dy/dist*radius/30;
-         	   //zPos-=dz/dist*radius/30;
-         	   updateCamera();
-            }
+				boolean moveX=true;
+				boolean moveY=true;
+				//System.out.println((xPos+maze.n*maze.size/2)+" "+(yPos+maze.n*maze.size/2));
+				for(int k=0;k<maze.edges.length;k++){
+					if(maze.edges[k].x1==maze.edges[k].x2){
+						if(isBetween(yPos+maze.n*maze.size/2,maze.edges[k].y1,maze.edges[k].y2)){
+							if(switched(xPos+maze.n*maze.size/2,2*dx/dist*radius/30, maze.edges[k].x1)){
+								if(!maze.edges[k].joined){
+									moveX=false;
+								}
+							}
+						}
+					}else{
+						if(isBetween(xPos+maze.n*maze.size/2,maze.edges[k].x1,maze.edges[k].x2)){
+							if(switched(yPos+maze.n*maze.size/2,2*dy/dist*radius/30, maze.edges[k].y1)){
+								if(!maze.edges[k].joined){
+									moveY=false;
+								}
+							}
+						}
+					}
+				}
+				if(moveX)xPos+=dx/dist*radius/30;
+				if(moveY)yPos+=dy/dist*radius/30;
+
+				updateCamera();
+			}
+			if(down[i]==KeyEvent.VK_S){//move backward
+				boolean moveX=true;
+				boolean moveY=true;
+				//System.out.println((xPos+maze.n*maze.size/2)+" "+(yPos+maze.n*maze.size/2));
+				for(int k=0;k<maze.edges.length;k++){
+					if(maze.edges[k].x1==maze.edges[k].x2){
+						if(isBetween(yPos+maze.n*maze.size/2,maze.edges[k].y1,maze.edges[k].y2)){
+							if(switched(xPos+maze.n*maze.size/2,-2*dx/dist*radius/30, maze.edges[k].x1)){
+								if(!maze.edges[k].joined){
+									moveX=false;
+								}
+							}
+						}
+					}else{
+						if(isBetween(xPos+maze.n*maze.size/2,maze.edges[k].x1,maze.edges[k].x2)){
+							if(switched(yPos+maze.n*maze.size/2,-2*dy/dist*radius/30, maze.edges[k].y1)){
+								if(!maze.edges[k].joined){
+									moveY=false;
+								}
+							}
+						}
+					}
+				}
+				if(moveX)xPos-=dx/dist*radius/30;
+				if(moveY)yPos-=dy/dist*radius/30;
+				updateCamera();
+			}
+			
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
          	   System.exit(1);
             }
@@ -479,8 +526,13 @@ public class DojoRenderer extends GLCanvas{
 			myGL.glVertex2d(px+2.5, py-2.5);
 			myGL.glEnd();
 		}
-		if(gameEnd){
-			displayMessage(myGL, "You Win!");
+		if(gameWin){
+			displayMessage(myGL, "You Win! (Press Space to play again)");
+			reset();
+        	anim.stop();
+		}
+		if(gameLost){
+			displayMessage(myGL, "You Lost :( (Press Space to play again)");
 			reset();
         	anim.stop();
 		}
@@ -538,11 +590,30 @@ public class DojoRenderer extends GLCanvas{
     	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0); //set the color maze
         for(int i=0; i< enemies.size(); i++){
         	enemies.get(i).draw(myGL);
+        	if(Math.abs(enemies.get(i).getPosition()[0]-maze.n*maze.size/2-xPos) < enemies.get(i).getLength() &&
+        			Math.abs(enemies.get(i).getPosition()[1]-yPos) < maze.n*maze.size/2+enemies.get(i).getLength()){
+        		gameLost= true;
+        	}
         }
         for(int i=0; i<traps.size(); i++){
         	//traps.get(i).draw(myGL);
         }
         myGL.glPopMatrix();
     }
+    public boolean isBetween(double x, double x1, double x2){
+		double low=Math.min(x1, x2);
+		double high=Math.max(x1, x2);
+		if(low<=x&&x<=high)return true;
+		return false;
+	}
+    public boolean switched(double x1, double dx, double x2){
+		if(x1<x2){
+			if(x1+dx>x2)return true;
+			return false;
+		}else{
+			if(x1+dx<x2)return true;
+			return false;
+		}
+	}
 
 }
