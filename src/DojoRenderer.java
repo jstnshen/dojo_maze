@@ -27,12 +27,8 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 
 /*
- * TODO update mouse movement and key movement at the same time
- * make enemy intelligent
- * design mini-puzzle
- * add inventory
- * add torch/ tracking
- * collision detection (learn gl pickering)
+ * Justin Shen
+ * Vijay Upadhya
  */
 public class DojoRenderer extends GLCanvas{
     public static final float SENSITIVITY= 2; //higher number = more sensitive mouse movement
@@ -591,7 +587,7 @@ public class DojoRenderer extends GLCanvas{
         for(int i=0; i< enemies.size(); i++){
         	enemies.get(i).draw(myGL);
         	if(Math.abs(enemies.get(i).getPosition()[0]-maze.n*maze.size/2-xPos) < enemies.get(i).getLength() &&
-        			Math.abs(enemies.get(i).getPosition()[1]-yPos) < maze.n*maze.size/2+enemies.get(i).getLength()){
+        			Math.abs(enemies.get(i).getPosition()[1]-yPos-maze.n*maze.size/2) < enemies.get(i).getLength()){
         		gameLost= true;
         	}
         }
