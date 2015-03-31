@@ -242,6 +242,8 @@ public class DojoRenderer extends GLCanvas{
         //initiate mouse location to center of screen
         currentX= 300;
         currentY = 300;
+        generateMaze();
+        createObjects();
     }
     /**
      * returns the x coordinate in terms of the distance and angles given (spherical coordinate) 
