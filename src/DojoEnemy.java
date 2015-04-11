@@ -16,12 +16,12 @@ public class DojoEnemy extends DojoObject{
 		xDirection=1;
 		yDirection =0 ;
 		zDirection=0;
-		setPosition(new double[]{x,y,z});
+		setPos(new double[]{x,y,z});
 		speed = 1;
 		length= radius;//this will be default radus of the basic enemy
 		width = 1;
 		height= 1;
-		damage=9001;
+		damage=21;
 		health= 42;
 		type= DOJO_ENEMY_BASIC;
 	}
@@ -93,13 +93,27 @@ public class DojoEnemy extends DojoObject{
 
 		
 		myGL.glPushMatrix();
-		myGL.glTranslated(getPosition()[0], getPosition()[1], getPosition()[2]);
+		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
 		GLUT myGLUT = new GLUT();
 		myGLUT.glutSolidSphere(length, 50, 50);
 		myGL.glPopMatrix();
 		
 	}
 
+	public void displayInfo(GL myGL){ //display info related to the enemy to the player
+		//draw health bar
+//		myGL.glColor3f(1f,0f,0f);
+//		myGL.glBegin(GL.GL_QUADS);
+//		myGL.glVertex2d(0, 0);
+//		myGL.glVertex2d(0, 20);
+//		myGL.glVertex2d(health*2, 20);
+//		myGL.glVertex2d(health*2, 0);
+//		myGL.glEnd();
+//
+//		myGL.glRasterPos2f(health*2, 0);
+//		GLUT myGLUT= new GLUT();
+//		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "HP: "+health);
+	}
 	public void update(){
 		
 	}

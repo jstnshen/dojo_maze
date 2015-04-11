@@ -22,11 +22,11 @@ public class DojoObject {
 		tex= newTex;
 		size = newSize;
 	}
-	public double[] getPosition() {
+	public double[] getPos() {
 		return position;
 	}
 
-	public void setPosition(double[] position) {
+	public void setPos(double[] position) {
 		this.position = position;
 	}
 	
