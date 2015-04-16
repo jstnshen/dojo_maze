@@ -7,7 +7,7 @@ import com.sun.opengl.util.texture.Texture;
 public class DojoWall extends DojoObject{
 
 	Color color;
-	double x1,x2,y1,y2,length=0;
+	double x1,x2,y1,y2,length;
 	DojoCell c1,c2;
 	boolean joined=false;
 	public DojoWall(double x, double y, double x2, double y2,DojoCell c1, DojoCell c2,double length){
@@ -18,6 +18,7 @@ public class DojoWall extends DojoObject{
 		this.c1=c1;this.c2=c2;
 		color = new Color(0,0,0);
 		this.length=length;
+		setPos(new double[]{(x2-x1)/2 , (y2-y1)/2, length/2});
 	}
 	
 

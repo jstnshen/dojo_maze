@@ -31,8 +31,8 @@ public class DojoMinimap extends Canvas{
 				//g.drawLine((int)(maze.edges[i].x1*scale),(int) (maze.edges[i].y1*scale),(int)( maze.edges[i].x2*scale), (int)(maze.edges[i].y2*scale));
 				gl.glColor3f(1f, 1f, 1f);
 				gl.glBegin(gl.GL_LINES);
-				gl.glVertex2d(maze.edges[i].x2*scale+450, maze.edges[i].y2*scale+420);
-				gl.glVertex2d(maze.edges[i].x1*scale+450, maze.edges[i].y1*scale+420);
+				gl.glVertex2d((maze.edges[i].x2+maze.n*maze.size/2)*scale+450, (maze.edges[i].y2+maze.n*maze.size/2)*scale+420);
+				gl.glVertex2d((maze.edges[i].x1+maze.n*maze.size/2)*scale+450, (maze.edges[i].y1+maze.n*maze.size/2)*scale+420);
 				gl.glEnd();
 			}
 		}

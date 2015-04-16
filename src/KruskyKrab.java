@@ -41,27 +41,43 @@ public class KruskyKrab extends Canvas{
 				l.add(cells[n*i+j]);
 				joined.add(l);
 				if(i!=0){
-					edges[counter]=new DojoWall(size*j,size*i,size*j+size,size*i,cells[n*i+j],cells[n*(i-1)+j],size);
+					edges[counter]=new DojoWall(size*j-n*size/2,size*i -n*size/2,size*j+size-n*size/2,size*i  -n*size/2,cells[n*i+j],cells[n*(i-1)+j],size);
 					counter+=1;
 					
 				}else{
-					edges[counter]=new DojoWall(size*j,size*i,size*j+size,size*i,cells[n*i+j],null,size);
+					edges[counter]=new DojoWall(size*j-n*size/2,size*i-n*size/2,size*j+size-n*size/2,size*i-n*size/2,cells[n*i+j],null,size);
 					counter+=1;
 				}
 				
-				if(j!=0){
-					edges[counter]=new DojoWall(size*j,size*i,size*j,size*i+size,cells[n*i+j],cells[n*i+j-1],size);
+				if(j!=0){ 
+					edges[counter]=new DojoWall(size*j-n*size/2
+							,size*i-n*size/2
+							,size*j-n*size/2
+							,size*i+size-n*size/2
+							,cells[n*i+j],cells[n*i+j-1],size);
 					counter+=1;
 				}else{
-					edges[counter]=new DojoWall(size*j,size*i,size*j,size*i+size,cells[n*i+j],null,size);
+					edges[counter]=new DojoWall(size*j-n*size/2
+							,size*i-n*size/2
+							,size*j-n*size/2
+							,size*i+size-n*size/2
+							,cells[n*i+j],null,size);
 					counter+=1;
 				}
 				
 				if(i==n-1){
-					edges[counter]=new DojoWall(size*j,size*(i+1),size*j+size,size*(i+1),cells[n*i+j],null,size);
+					edges[counter]=new DojoWall(size*j-n*size/2
+							,size*(i+1)-n*size/2
+							,size*j+size-n*size/2
+							,size*(i+1)-n*size/2
+							,cells[n*i+j],null,size);
 					counter+=1;
 				}if(j==n-1){
-					edges[counter]=new DojoWall(size*(j+1),size*i, size*(j+1),size*i+size,cells[n*i+j],null,size);
+					edges[counter]=new DojoWall(size*(j+1)-n*size/2
+							,size*i-n*size/2
+							, size*(j+1)-n*size/2
+							,size*i+size-n*size/2
+							,cells[n*i+j],null,size);
 					counter+=1;
 				}
 				
