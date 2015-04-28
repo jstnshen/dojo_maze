@@ -59,4 +59,31 @@ public class DojoProjectile extends DojoObject {
 		this.radius = radius;
 	}
 	
+	public void update(){
+//		if(isAnimated && isJumping){
+//			
+//		}
+//		if(isJumping){
+//			double dt =0.05;
+//			speed += accel*dt; 
+//			double dz = speed*dt;
+//			setPos(new double[]{getPos()[0], getPos()[1], getPos()[2]+dz});
+//			if(getPos()[2] < 15){
+//				setPos(new double[]{getPos()[0], getPos()[1], 15});
+//				speed = 10;
+//				isJumping = false;
+//			}
+//		}
+//		if(isInvulnerable){
+//			double dt =0.1;
+//			speed += accel*dt; 
+//			double dz = speed*dt;
+//			setPos(new double[]{getPos()[0], getPos()[1], getPos()[2]+dz});
+//			if(getPos()[2] < 15){
+//				setPos(new double[]{getPos()[0], getPos()[1], 15});
+//				speed = 10;
+//				isInvulnerable = false;
+//			}
+//		}
+	}
 }

@@ -36,12 +36,12 @@ import com.sun.opengl.util.texture.TextureIO;
  * improve invulnerability animation
  */
 public class DojoRenderer extends GLCanvas{
-    public static final float SENSITIVITY= 2; //higher number = more sensitive mouse movement
+    public static final float SENSITIVITY= 5.0f; //higher number = more sensitive mouse movement
     public static final int NUM_SQUARE = 3; //number of smaller squares along the side of each wall
     public static final float SUN_SIZE= 10.0f; //size of the radius of the sun
     public static final float ENVIRONMENT_SIZE = 700f;//size of the game world
-    public static int CENTER_X = 300; //x center of canvas
-    public static int CENTER_Y = 300; //y center of canvas
+    public static int REFERENCE_X = 300; //x center of canvas
+    public static int REFERENCE_Y = 300; //y center of canvas
     private Animator anim; //animator object used to animate the canvas
   //  private float player.getPos()[0],player.getPos()[1],player.getPos()[2]; //position of the camera
   //  private float player.getUp()[0],player.getUp()[1],player.getUp()[2]; //up position of the camera
@@ -61,6 +61,7 @@ public class DojoRenderer extends GLCanvas{
     private boolean isDay;
     private boolean gameWin = false;
     private boolean gameLost = false;
+    private boolean intro=true;
     /**
      * Constructor, initiate the settings the camera and the size of the objects
      * @param glCap
@@ -116,7 +117,7 @@ public class DojoRenderer extends GLCanvas{
         this.addKeyListener(new KeyAdapter(){ //implement KeyAdapter to detect key events
           	@Override
           	public void keyPressed(KeyEvent e){ //stores keys pressed for processing
-          		if(e.getKeyChar() ==' '){
+          		if(e.getKeyChar() =='p' || e.getKeyChar() ==' '){
           			if(anim.isAnimating()) 	anim.stop();
                 	else anim.start();
 				}
@@ -161,14 +162,12 @@ public class DojoRenderer extends GLCanvas{
               @Override
               public void mouseMoved(MouseEvent me){ //update current location of the mouse in the canvas	
             	  if(Math.abs(currentX-me.getX()) >0){
-            		  //pan horiplayer.getDir()[2]ntal
-            		  System.out.print("x"+( currentX-me.getX()) +" ");
-            		  theta+= (double)((currentX-me.getX()));//-Math.signum(currentX-me.getX())*100)/100 * 2.0);
+            		  //pan horiplayer.getDir()[2]
+            		  theta+= (double)((currentX-me.getX()))/SENSITIVITY;//-Math.signum(currentX-me.getX())*100)/100 * 2.0);
             	  }
             	  if(Math.abs(currentY-me.getY()) >0){
             		  //pan vertical
-            		  System.out.print("y"+ (currentY-me.getY())+" ");
-            		  phi+= (double)(currentY-me.getY());//-Math.signum(currentY-me.getY())*100)/100 * 2.0;
+            		  phi+= (double)(currentY-me.getY())/SENSITIVITY;//-Math.signum(currentY-me.getY())*100)/100 * 2.0;
             	  }
 //            	  if(Math.abs(me.getX()-currentX) !=0)
 //                      theta-=SENSITIVITY*(me.getX()-prevX)/Math.abs((me.getX()-prevX)); //increase the number of degrees to rotate
@@ -179,22 +178,28 @@ public class DojoRenderer extends GLCanvas{
                   updateCamera();
             	  currentX = me.getX(); 
                   currentY = me.getY();
-//                  try{
-//                	  Robot robot = new Robot();
-//                	  if(Math.abs(currentX-CENTER_X) > 200){
+                  try{
+                	  if(currentX==me.getX() && currentY==me.getY()){
+                		  Robot robot = new Robot();
+                    	  robot.mouseMove(REFERENCE_X,REFERENCE_Y+45);
+                		  currentX = REFERENCE_X;
+                		  currentY=REFERENCE_Y;
+                	  }
+                	  
+//                	  if(Math.abs(currentX-REFERENCE_X) > -){
 //                		  System.out.print(currentX+" player.getDir()[1] "+currentY);
-//                		  robot.mouseMove(CENTER_X,currentY);
-//                		  currentX = CENTER_X;
+//                		  robot.mouseMove(REFERENCE_X,currentY);
+//                		  currentX = REFERENCE_X;
 //                	  }                		      
-//                	  if( Math.abs(currentY-CENTER_Y) > 200){
+//                	  if( Math.abs(currentY-REFERENCE_Y) > -){
 //                		  System.out.print(currentX+" player.getDir()[1] "+currentY);
-//                		  robot.mouseMove(currentX,CENTER_Y);
-//                		  currentY= CENTER_Y;
+//                		  robot.mouseMove(currentX,REFERENCE_Y);
+//                		  currentY= REFERENCE_Y;
 //                	  }
 //            		  System.out.println(currentX+" man "+currentY);
-//                  }catch(Exception ex){
-//                      ex.printStackTrace();
-//                  }
+                  }catch(Exception ex){
+                      ex.printStackTrace();
+                  }
               }
               
           });
@@ -225,7 +230,6 @@ public class DojoRenderer extends GLCanvas{
         traps = new ArrayList<DojoTrap>();
         for(int i=0; i< 10; i++){
         	int rand= (int)(Math.random()*maze.n*maze.n);
-        	System.out.println(maze.cells[rand].x+maze.cells[rand].width/2);
             enemies.add(new DojoEnemy(maze.size/4
             		,maze.cells[rand].x+maze.cells[rand].width/2-maze.n*maze.size/2
             		,maze.cells[rand].y+maze.cells[rand].height/2-maze.n*maze.size/2
@@ -251,6 +255,7 @@ public class DojoRenderer extends GLCanvas{
     	//game state reset
     	gameWin=false;
     	gameLost= false;
+    	intro=true;
     	player = new DojoPlayer();
     	//camera state reset
         radius = 25;
@@ -347,6 +352,11 @@ public class DojoRenderer extends GLCanvas{
         switchto2D(myGL);
         player.draw(myGL);
         drawHUD(myGL);
+        if(intro){
+        	displayMessage(myGL, "WELCOME!");
+			//reset();
+        	//anim.stop();
+        }
 		if(gameWin){
 			displayMessage(myGL, "You Win! (Press Space to play again)");
 			reset();
@@ -366,12 +376,12 @@ public class DojoRenderer extends GLCanvas{
 		gl.glColor3f(0f, 0f, 0f);
 		gl.glBegin(gl.GL_QUADS);
 		gl.glVertex2d(0, 0);
-		gl.glVertex2d(600, 0);
-		gl.glVertex2d(600, 600);
-		gl.glVertex2d(0,600);
+		gl.glVertex2d(getWidth(), 0);
+		gl.glVertex2d(getWidth(), getHeight());
+		gl.glVertex2d(0,getHeight());
 		gl.glEnd();
 		gl.glColor3f(1f, 1f, 1f);
-		//gl.glRasterPos2f(CENTER_X-180, CENTER_Y);
+		//gl.glRasterPos2f(REFERENCE_X-180, REFERENCE_Y);
 		gl.glRasterPos2f(getWidth()/2-180, getHeight()/2);
 		GLUT myGLUT= new GLUT();
 		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, msg);
@@ -383,10 +393,10 @@ public class DojoRenderer extends GLCanvas{
         DojoRenderer myCanvas = new DojoRenderer(cap);    
         frame.add(myCanvas);
         //set up frame
-        frame.setSize(600, 600);
-//        frame.setCursor(frame.getToolkit().createCustomCursor(
-//                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
-//                "null"));
+        frame.setSize(1000, 1000);
+        frame.setCursor(frame.getToolkit().createCustomCursor( //make mouse invisable
+                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
+                "null"));
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         myCanvas.requestFocus();
@@ -397,13 +407,13 @@ public class DojoRenderer extends GLCanvas{
      */
     public void processEvents(){
     	//process mouse events
-//        if(Math.abs(currentX-CENTER_X) >80){
+//        if(Math.abs(currentX-REFERENCE_X) >80){
 //        	//pan horiplayer.getDir()[2]ntal
-//        	theta-= (double)((currentX-CENTER_X-Math.signum(currentX-CENTER_X)*100)/100 * 2.0);
+//        	theta-= (double)((currentX-REFERENCE_X-Math.signum(currentX-REFERENCE_X)*100)/100 * 2.0);
 //        }
-//        if(Math.abs(currentY-CENTER_Y) >80){
+//        if(Math.abs(currentY-REFERENCE_Y) >80){
 //        	//pan vertical
-//        	phi-= (double)(currentY-CENTER_Y-Math.signum(currentY-CENTER_Y)*100)/100 * 2.0;
+//        	phi-= (double)(currentY-REFERENCE_Y-Math.signum(currentY-REFERENCE_Y)*100)/100 * 2.0;
 //        }
         updateCamera();
         //process key events
@@ -419,7 +429,11 @@ public class DojoRenderer extends GLCanvas{
             double dx=player.getDir()[0]-player.getPos()[0];//lets the camera move front and back around the room
             double dy=player.getDir()[1]-player.getPos()[1];
             double dz=player.getDir()[2]-player.getPos()[2];
-            double dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+            double dist1=Math.sqrt(dx*dx+dy*dy+dz*dz);
+			double x = player.getUp()[1] * player.getDir()[2] - player.getUp()[2] * dy;
+			double y = player.getUp()[2] * dx - player.getUp()[0] * player.getDir()[2];
+			double z = player.getUp()[0] * dy - player.getUp()[1] * dx;
+			double dist2 = Math.sqrt((x-player.getPos()[0])*(x-player.getPos()[0])+(y-player.getPos()[1])*(y-player.getPos()[1])+(z-player.getPos()[2])*(z-player.getPos()[2]));
             if(down[i]==KeyEvent.VK_W && !player.getState()){//move forward
 				boolean moveX=true;
 				boolean moveY=true;
@@ -443,8 +457,8 @@ public class DojoRenderer extends GLCanvas{
 //						}
 //					}
 //				}
-				if(moveX)player.getPos()[0]+=dx/dist*radius/30;
-				if(moveY)player.getPos()[1]+=dy/dist*radius/30;
+				if(moveX)player.getPos()[0]+=dx/dist1*radius/30;
+				if(moveY)player.getPos()[1]+=dy/dist1*radius/30;
 
 				updateCamera();
 			}
@@ -471,18 +485,47 @@ public class DojoRenderer extends GLCanvas{
 //						}
 //					}
 //				}
-				if(moveX)player.getPos()[0]-=dx/dist*radius/30;
-				if(moveY)player.getPos()[1]-=dy/dist*radius/30;
+				if(moveX)player.getPos()[0]-=dx/dist1*radius/30;
+				if(moveY)player.getPos()[1]-=dy/dist1*radius/30;
 				updateCamera();
 			}
-			
+			if(down[i]==KeyEvent.VK_D && !player.getState()){//move right
+				boolean moveX=true;
+				boolean moveY=true;
+				//up	0 1	2
+				//dir   0 1 2
+
+				if(moveX){
+					player.getPos()[0]-=x/dist2*radius/30;
+				//	player.getDir()[0]-=x/100*radius/30;
+				}
+				if(moveY){
+					player.getPos()[1]-=y/dist2*radius/30;
+				//	player.getDir()[1]-=y/100*radius/30;
+				}
+				updateCamera();
+			}
+			if(down[i]==KeyEvent.VK_A && !player.getState()){//move right
+				boolean moveX=true;
+				boolean moveY=true;
+
+				if(moveX){
+					player.getPos()[0]+=x/dist2*radius/30;
+				//	player.getDir()[0]+=x/100*radius/30;
+				}
+				if(moveY){
+					player.getPos()[1]+=y/dist2*radius/30;
+				//	player.getDir()[1]+=y/100*radius/30;
+				}
+				updateCamera();
+			}
+			if(down[i]==KeyEvent.VK_ENTER){
+				intro=false;
+			}
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
          	   System.exit(1);
             }
-//            if(down[i] == KeyEvent.VK_SPACE){
-//         	   isDay = !isDay;
-//            	
-// 			}
+
     	}
     }
   
@@ -655,8 +698,8 @@ public class DojoRenderer extends GLCanvas{
         for(int i=0; i< enemies.size(); i++){
         	enemies.get(i).draw(myGL);
         	//detects enemy-player collision
-        	if(Math.abs(enemies.get(i).getPos()[0]-maze.n*maze.size/2-player.getPos()[0]) < enemies.get(i).getLength() + player.getSize() &&
-        			Math.abs(enemies.get(i).getPos()[1]-player.getPos()[1]-maze.n*maze.size/2) < enemies.get(i).getLength()+player.getSize() ){
+        	if(Math.abs(enemies.get(i).getPos()[0]-player.getPos()[0]) < enemies.get(i).getLength() + player.getSize() &&
+        			Math.abs(enemies.get(i).getPos()[1]-player.getPos()[1]) < enemies.get(i).getLength()+player.getSize() ){
         		player.setHealth(player.getHealth()-enemies.get(i).getDamage()); //loses health from attack
         		double dx=player.getDir()[0]-player.getPos()[0];//simulates "bouncing back" reaction
     		   	double dy=player.getDir()[1]-player.getPos()[1];
@@ -670,8 +713,8 @@ public class DojoRenderer extends GLCanvas{
         for(int i=0; i<traps.size(); i++){
         	traps.get(i).draw(myGL);
         	//detects trap-player collision
-        	if(Math.abs(traps.get(i).getPos()[0]-maze.n*maze.size/2-player.getPos()[0]) < traps.get(i).getSize()+player.getSize() &&
-        			Math.abs(traps.get(i).getPos()[1]-player.getPos()[1]-maze.n*maze.size/2) < traps.get(i).getSize()+player.getSize() &&
+        	if(Math.abs(traps.get(i).getPos()[0]-player.getPos()[0]) < traps.get(i).getSize()+player.getSize() &&
+        			Math.abs(traps.get(i).getPos()[1]-player.getPos()[1]) < traps.get(i).getSize()+player.getSize() &&
         			Math.abs(traps.get(i).getPos()[2]-player.getPos()[2]) <= 15){
         		player.setHealth(player.getHealth()-traps.get(i).getDamage()); //loses health from trap
         		if(player.getHealth() <= 0) gameLost= true;
