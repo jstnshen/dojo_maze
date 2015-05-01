@@ -1,4 +1,4 @@
-import java.awt.Frame;
+import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.KeyAdapter;
@@ -19,7 +19,9 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLException;
 import javax.media.opengl.glu.GLU;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.GLUT;
@@ -36,7 +38,7 @@ import com.sun.opengl.util.texture.TextureIO;
  * improve invulnerability animation
  */
 public class DojoRenderer extends GLCanvas{
-    public static final float SENSITIVITY= 5.0f; //higher number = more sensitive mouse movement
+    public static final float SENSITIVITY= 10.0f; //higher number = more sensitive mouse movement
     public static final int NUM_SQUARE = 3; //number of smaller squares along the side of each wall
     public static final float SUN_SIZE= 10.0f; //size of the radius of the sun
     public static final float ENVIRONMENT_SIZE = 700f;//size of the game world
@@ -59,9 +61,12 @@ public class DojoRenderer extends GLCanvas{
     private ArrayList<DojoTrap> traps;
     private float size; 
     private boolean isDay;
-    private boolean gameWin = false;
+    private boolean mazeWin = false;
     private boolean gameLost = false;
+    private boolean gameWin= false;
     private boolean intro=true;
+    private double minimapSize = 200;
+    private int level;
     /**
      * Constructor, initiate the settings the camera and the size of the objects
      * @param glCap
@@ -254,8 +259,10 @@ public class DojoRenderer extends GLCanvas{
     public void reset(){
     	//game state reset
     	gameWin=false;
+    	mazeWin = false;
     	gameLost= false;
     	intro=true;
+    	level=1;
     	player = new DojoPlayer();
     	//camera state reset
         radius = 25;
@@ -330,11 +337,13 @@ public class DojoRenderer extends GLCanvas{
         myGL.glLoadIdentity();
         GLU myGLU= new GLU();
         myGLU.gluLookAt(player.getPos()[0],player.getPos()[1],player.getPos()[2],player.getDir()[0],player.getDir()[1],player.getDir()[2], player.getUp()[0], player.getUp()[1], player.getUp()[2]); //the up x,y,z is 90 offset from the camera's position
-
+        //myGLU.gluLookAt(2*player.getPos()[0]-player.getDir()[0],2*player.getPos()[1]-player.getDir()[1],2*player.getPos()[2]-player.getDir()[2],player.getPos()[0],player.getPos()[1],player.getPos()[2], player.getUp()[0], player.getUp()[1], player.getUp()[2]); 
         processEvents();
         if(Math.abs(player.getPos()[0])> maze.n*maze.size/2+5 || Math.abs(player.getPos()[1]) > maze.n*maze.size/2+5){
         //	switchto2D(myGL);
-        	gameWin = true;
+        	//gameWin = true;
+        	if(level<5) mazeWin=true; //finished maze
+        	else gameWin= true; //finish game
         	//displayMessage(myGL, "You Win!");
         	//reset();
         	//anim.stop();
@@ -350,7 +359,7 @@ public class DojoRenderer extends GLCanvas{
         myGL.glPopMatrix();
         
         switchto2D(myGL);
-        player.draw(myGL);
+        player.displayStatus(myGL);
         drawHUD(myGL);
         if(intro){
         	displayMessage(myGL, "WELCOME!");
@@ -360,6 +369,13 @@ public class DojoRenderer extends GLCanvas{
 		if(gameWin){
 			displayMessage(myGL, "You Win! (Press Space to play again)");
 			reset();
+        	anim.stop();
+		}
+		if(mazeWin){
+			displayMessage(myGL, "You solved the maze! But can you solve the next one? (Press Space to continue)");
+			int currentLvl =level;
+			reset();
+			level= currentLvl+1;
         	anim.stop();
 		}
 		if(gameLost){
@@ -391,7 +407,14 @@ public class DojoRenderer extends GLCanvas{
         //create and add GLCanvas subclass to frame
         GLCapabilities cap= new GLCapabilities();
         DojoRenderer myCanvas = new DojoRenderer(cap);    
-        frame.add(myCanvas);
+        JPanel panel= new JPanel();
+        panel.setLayout(new BorderLayout());
+//        panel.add(new JButton(),BorderLayout.PAGE_END);
+//        panel.add(new JButton(),BorderLayout.PAGE_START);
+//        panel.add(new JButton(),BorderLayout.LINE_END);
+//        panel.add(new JButton(),BorderLayout.LINE_START);
+        panel.add(myCanvas, BorderLayout.CENTER);
+        frame.add(panel);
         //set up frame
         frame.setSize(1000, 1000);
         frame.setCursor(frame.getToolkit().createCustomCursor( //make mouse invisable
@@ -438,25 +461,25 @@ public class DojoRenderer extends GLCanvas{
 				boolean moveX=true;
 				boolean moveY=true;
 //				//System.out.println((player.getPos()[0]+maze.n*maze.size/2)+" "+(player.getPos()[1]+maze.n*maze.size/2));
-//				for(int k=0;k<maze.edges.length;k++){
-//					if(maze.edges[k].x1==maze.edges[k].x2){
-//						if(isBetween(player.getPos()[1]+maze.n*maze.size/2,maze.edges[k].y1,maze.edges[k].y2)){
-//							if(switched(player.getPos()[0]+maze.n*maze.size/2,2*dx/dist*radius/30, maze.edges[k].x1)){
-//								if(!maze.edges[k].joined){
-//									moveX=false;
-//								}
-//							}
-//						}
-//					}else{
-//						if(isBetween(player.getPos()[0]+maze.n*maze.size/2,maze.edges[k].x1,maze.edges[k].x2)){
-//							if(switched(player.getPos()[1]+maze.n*maze.size/2,2*dy/dist*radius/30, maze.edges[k].y1)){
-//								if(!maze.edges[k].joined){
-//									moveY=false;
-//								}
-//							}
-//						}
-//					}
-//				}
+				for(int k=0;k<maze.edges.length;k++){
+					if(maze.edges[k].x1==maze.edges[k].x2){
+						if(isBetween(player.getPos()[1],maze.edges[k].y1,maze.edges[k].y2)){
+							if(switched(player.getPos()[0],2*dx/dist1*radius/30, maze.edges[k].x1)){
+								if(!maze.edges[k].joined){
+									moveX=false;
+								}
+							}
+						}
+					}else{
+						if(isBetween(player.getPos()[0],maze.edges[k].x1,maze.edges[k].x2)){
+							if(switched(player.getPos()[1],2*dy/dist1*radius/30, maze.edges[k].y1)){
+								if(!maze.edges[k].joined){
+									moveY=false;
+								}
+							}
+						}
+					}
+				}
 				if(moveX)player.getPos()[0]+=dx/dist1*radius/30;
 				if(moveY)player.getPos()[1]+=dy/dist1*radius/30;
 
@@ -492,8 +515,6 @@ public class DojoRenderer extends GLCanvas{
 			if(down[i]==KeyEvent.VK_D && !player.getState()){//move right
 				boolean moveX=true;
 				boolean moveY=true;
-				//up	0 1	2
-				//dir   0 1 2
 
 				if(moveX){
 					player.getPos()[0]-=x/dist2*radius/30;
@@ -520,6 +541,7 @@ public class DojoRenderer extends GLCanvas{
 				updateCamera();
 			}
 			if(down[i]==KeyEvent.VK_ENTER){
+				reset();
 				intro=false;
 			}
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
@@ -543,7 +565,8 @@ public class DojoRenderer extends GLCanvas{
 	      		i--;
 	      	}
     	}
-        mm=new DojoMinimap(maze);
+
+        mm=new DojoMinimap(maze,getWidth()-minimapSize-1,getHeight()-minimapSize-1,minimapSize);
     }
 
     /**
@@ -592,10 +615,10 @@ public class DojoRenderer extends GLCanvas{
 //		double py=(maze.n*maze.size/2+player.getPos()[1])*150d/(maze.n*maze.size)+420;
 //		double pxo=(maze.n*maze.size/2+player.getDir()[0])*150d/(maze.n*maze.size)+450;
 //		double pyo=(maze.n*maze.size/2+player.getDir()[1])*150d/(maze.n*maze.size)+420;
-		double px=(player.getPos()[0]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+450;
-		double py=(player.getPos()[1]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+420;
-		double pxo=(player.getDir()[0]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+450;
-		double pyo=(player.getDir()[1]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+420;
+		double px=(player.getPos()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
+		double py=(player.getPos()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
+		double pxo=(player.getDir()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
+		double pyo=(player.getDir()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
 		//System.out.println(player.getPos()[0]+" "+player.getPos()[1]);
 		double angle = Math.atan((pyo-py) / (pxo-px));
 		double shift = 2.0*Math.PI/3.0;
@@ -621,8 +644,8 @@ public class DojoRenderer extends GLCanvas{
 		myGL.glEnd();
 		for(int i=0;i<enemies.size();i++){
 			//System.out.println(enemies.get(i).getPos()()[0]+" "+enemies.get(i).getPos()()[1]);
-			px=(enemies.get(i).getPos()[0]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+450;
-			py=(enemies.get(i).getPos()[1]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+420;
+			px=(enemies.get(i).getPos()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
+			py=(enemies.get(i).getPos()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
 			myGL.glColor3f(1f,0f,0f);
 			myGL.glBegin(GL.GL_QUADS);
 			myGL.glVertex2d(px-2, py-2);
@@ -632,8 +655,8 @@ public class DojoRenderer extends GLCanvas{
 			myGL.glEnd();
 		}
 		for(int i=0;i<traps.size();i++){
-			px=(traps.get(i).getPos()[0]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+450;
-			py=(traps.get(i).getPos()[1]+maze.n*maze.size/2)*150d/(maze.n*maze.size)+420;
+			px=(traps.get(i).getPos()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
+			py=(traps.get(i).getPos()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
 			myGL.glColor3f(1f,0f,1f);
 			myGL.glBegin(GL.GL_QUADS);
 			myGL.glVertex2d(px-2, py-2);
@@ -720,6 +743,8 @@ public class DojoRenderer extends GLCanvas{
         		if(player.getHealth() <= 0) gameLost= true;
         	}
         }
+//        myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,0f,0f,1f},0); //color of the player
+//        player.draw(myGL);
         myGL.glPopMatrix();
     }
     public void updateObjects(){

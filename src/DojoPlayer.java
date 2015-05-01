@@ -101,7 +101,14 @@ public class DojoPlayer extends DojoObject{
 		
 	}
 	@Override
-	public void draw(GL myGL){ //display player related status on the canvas
+	public void draw(GL myGL){
+		myGL.glPushMatrix();
+		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
+		GLUT myGLUT = new GLUT();
+		myGLUT.glutSolidSphere(getSize(), 50, 50);
+		myGL.glPopMatrix();
+	}
+	public void displayStatus(GL myGL){ //display player related status on the canvas
 		//draw health bar
 		myGL.glColor3f(1f,0f,0f);
 		if(isInvulnerable) myGL.glColor3f(1,1,0);
