@@ -1,89 +1,45 @@
+import javax.media.opengl.GL;
+
+import com.sun.opengl.util.GLUT;
+
 
 public class DojoProjectile extends DojoObject {
-	double xDirection, yDirection, zDirection;
-	double speed;
-	double locX, locY, locZ;
-	double radius;
-	public DojoProjectile(){
+	private double[] direction;
+	private double speed;
+
+	public DojoProjectile(double size, double x, double y, double z, double[] dir, double newSpeed){
 		super();
-		xDirection=0; yDirection=0; zDirection=0;
-		locX=0; locY=0; locZ=0;
-		radius=1;
+		setPos(new double[]{x,y,z});
+		double dx =(dir[0]-getPos()[0]);
+		double dy =(dir[1]-getPos()[1]);
+		double dz =(dir[2]-getPos()[2]);
+		setDir(new double[]{dx,dy,dz});
+		setSize(size);
+		speed=newSpeed;
+
 	}
-	public double getxDirection() {
-		return xDirection;
-	}
-	public void setxDirection(double xDirection) {
-		this.xDirection = xDirection;
-	}
-	public double getyDirection() {
-		return yDirection;
-	}
-	public void setyDirection(double yDirection) {
-		this.yDirection = yDirection;
-	}
-	public double getzDirection() {
-		return zDirection;
-	}
-	public void setzDirection(double zDirection) {
-		this.zDirection = zDirection;
-	}
+
 	public double getSpeed() {
 		return speed;
 	}
 	public void setSpeed(double speed) {
 		this.speed = speed;
 	}
-	public double getLocX() {
-		return locX;
+	public double[] getDir() {
+		return direction;
 	}
-	public void setLocX(double locX) {
-		this.locX = locX;
-	}
-	public double getLocY() {
-		return locY;
-	}
-	public void setLocY(double locY) {
-		this.locY = locY;
-	}
-	public double getLocZ() {
-		return locZ;
-	}
-	public void setLocZ(double locZ) {
-		this.locZ = locZ;
-	}
-	public double getRadius() {
-		return radius;
-	}
-	public void setRadius(double radius) {
-		this.radius = radius;
+	public void setDir(double[] newDirection) {
+		this.direction = newDirection;
 	}
 	
+	public void draw(GL myGL){
+		myGL.glPushMatrix();
+		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
+		GLUT myGLUT = new GLUT();
+		myGLUT.glutSolidSphere(getSize(), 10, 10);
+		myGL.glPopMatrix();
+	}
 	public void update(){
-//		if(isAnimated && isJumping){
-//			
-//		}
-//		if(isJumping){
-//			double dt =0.05;
-//			speed += accel*dt; 
-//			double dz = speed*dt;
-//			setPos(new double[]{getPos()[0], getPos()[1], getPos()[2]+dz});
-//			if(getPos()[2] < 15){
-//				setPos(new double[]{getPos()[0], getPos()[1], 15});
-//				speed = 10;
-//				isJumping = false;
-//			}
-//		}
-//		if(isInvulnerable){
-//			double dt =0.1;
-//			speed += accel*dt; 
-//			double dz = speed*dt;
-//			setPos(new double[]{getPos()[0], getPos()[1], getPos()[2]+dz});
-//			if(getPos()[2] < 15){
-//				setPos(new double[]{getPos()[0], getPos()[1], 15});
-//				speed = 10;
-//				isInvulnerable = false;
-//			}
-//		}
+		setPos(new double[]{getPos()[0]+getDir()[0]*speed, getPos()[1]+getDir()[1]*speed, getPos()[2]+getDir()[2]*speed});
 	}
 }

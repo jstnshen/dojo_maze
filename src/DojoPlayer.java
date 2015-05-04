@@ -12,6 +12,7 @@ public class DojoPlayer extends DojoObject{
 	private int damage;
 	private int health;
 	private int type;
+	private int bulletLeft;
 	private boolean isAnimated; //true if the player is in an animated sequence (not controlled by keyboard)
 	private boolean isJumping; //true if the player is in a jumping sequence
 	private boolean isInvulnerable; //true if the player just got damaged 
@@ -24,6 +25,7 @@ public class DojoPlayer extends DojoObject{
 		height= 1;
 		damage=9001;
 		health= 84;
+		bulletLeft=10;
 		setSize(length);
 		isAnimated= false;
 		isJumping = false;
@@ -97,7 +99,16 @@ public class DojoPlayer extends DojoObject{
 	public void setType(int type) {
 		this.type = type;
 	}
-	public void attack(DojoPlayer p){
+	public void setBulletLeft(int bullet){
+		bulletLeft=bullet;
+	}
+	public int getBulletLeft(){
+		return bulletLeft;
+	}
+	public void attack(){
+		if(bulletLeft>0){
+			bulletLeft--;
+		}
 		
 	}
 	@Override

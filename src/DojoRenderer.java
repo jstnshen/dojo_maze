@@ -33,9 +33,16 @@ import com.sun.opengl.util.texture.TextureIO;
  * Vijay Upadhya
  * 
  * TODO
- * display enemy info, player info, traps
- * gl picking
- * improve invulnerability animation
+Goal by next week: traps, enemies, progression, shooting (everything but themes and graphics and UI)
+				new types of traps (projectile), set up dojoBonus
+Player ability:
+shoot (limited amount of ammo), jump, shield, special actions
+
+power up:
+demolition, creation -> (world creation mode)
+health
+torches (sensor)
+ammo
  */
 public class DojoRenderer extends GLCanvas{
     public static final float SENSITIVITY= 10.0f; //higher number = more sensitive mouse movement
@@ -59,12 +66,16 @@ public class DojoRenderer extends GLCanvas{
     private DojoPlayer player;
     private ArrayList<DojoEnemy> enemies; //enemies in the maze
     private ArrayList<DojoTrap> traps;
+    private ArrayList<DojoProjectile> proj;
+    private ArrayList<DojoBonus> bonus;
     private float size; 
     private boolean isDay;
     private boolean mazeWin = false;
     private boolean gameLost = false;
     private boolean gameWin= false;
     private boolean intro=true;
+    
+    private boolean isShooting = false;
     private double minimapSize = 200;
     private int level;
     /**
@@ -159,7 +170,9 @@ public class DojoRenderer extends GLCanvas{
                */
               public void mouseClicked(MouseEvent e){
                   if(e.getClickCount() != 0){
-
+                	  if(!intro){
+                		  isShooting=true;
+                	  }
                   }
               }
           });
@@ -233,6 +246,8 @@ public class DojoRenderer extends GLCanvas{
     public void createObjects(){
         enemies = new ArrayList<DojoEnemy> ();
         traps = new ArrayList<DojoTrap>();
+        bonus = new ArrayList<DojoBonus>();
+        proj = new ArrayList<DojoProjectile>();
         for(int i=0; i< 10; i++){
         	int rand= (int)(Math.random()*maze.n*maze.n);
             enemies.add(new DojoEnemy(maze.size/4
@@ -248,6 +263,13 @@ public class DojoRenderer extends GLCanvas{
             		,maze.cells[rand].y+maze.cells[rand].height/2-maze.n*maze.size/2
             		,0));
             //System.out.println(rand);
+        }
+        for(int i=0; i<5; i++){
+        	int rand= (int)(Math.random()*maze.n*maze.n);
+            bonus.add(new DojoBonus(maze.size/4
+            		,maze.cells[rand].x+maze.cells[rand].width/2-maze.n*maze.size/2
+            		,maze.cells[rand].y+maze.cells[rand].height/2-maze.n*maze.size/2
+            		,0));
         }
         
        // rand=(int)(Math.random()*maze.n*maze.n);
@@ -717,7 +739,15 @@ public class DojoRenderer extends GLCanvas{
     public void drawObjects(GL myGL){
     	myGL.glPushMatrix();
     	//myGL.glTranslated(-maze.n*maze.size/2, -maze.n*maze.size/2,0);
-    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0); //set the color maze
+    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0.6f,0.6f,0.6f,1f},0);
+    	for(int i=0; i<proj.size(); i++){
+    		proj.get(i).draw(myGL);
+    	}
+    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,1f,0f,1f},0);
+    	for(int i=0; i< bonus.size();i++){
+    		bonus.get(i).draw(myGL);
+    	}
+    	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0); 
         for(int i=0; i< enemies.size(); i++){
         	enemies.get(i).draw(myGL);
         	//detects enemy-player collision
@@ -749,12 +779,25 @@ public class DojoRenderer extends GLCanvas{
     }
     public void updateObjects(){
     	player.update();
+    	if(player.getBulletLeft()<=0) isShooting = false;
+    	if(isShooting){
+    		isShooting = false;
+    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 1));
+
+    	}
     	for(int i=0; i< enemies.size(); i++){
     		enemies.get(i).update();
         }
 //          for(int i=0; i<traps.size(); i++){
 //          	traps.get(i).update();
 //          }
+//      for(int i=0; i<bonus.size(); i++){
+//  	bonus.get(i).update();
+//  }
+    	for(int i=0; i<proj.size(); i++){
+    		proj.get(i).update();
+    		
+    	}
     	
     }
     public boolean isBetween(double x, double x1, double x2){
