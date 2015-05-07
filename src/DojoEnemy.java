@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
@@ -11,6 +13,10 @@ public class DojoEnemy extends DojoObject{
 	private int damage;
 	private int health;
 	private int type;
+	private boolean enroute=false;
+	private double destX=0;
+	private double destY=0;
+	private ArrayList<Integer> path;
 	public DojoEnemy(double radius, double x, double y, double z){
 		super();
 		xDirection=1;
@@ -91,7 +97,18 @@ public class DojoEnemy extends DojoObject{
 
 	public void draw(GL myGL){
 
-		
+		if(enroute){
+			if(Math.sqrt(Math.pow(getPos()[0]-destX,2)+Math.pow(getPos()[1]-destY,2))<=speed){
+				this.setPos(new double[]{destX, destY, getPos()[2]});
+				enroute=false;
+			}else{
+				this.setPos(new double[]{getPos()[0]-Math.signum(getPos()[0]-destX)*speed,getPos()[1]-Math.signum(getPos()[1]-destY)*speed,getPos()[2]});
+			}
+//			if(Math.random()>.995){
+//				this.setPos(new double[]{destX, destY, getPos()[2]});
+//				enroute=false;
+//			}
+		}
 		myGL.glPushMatrix();
 		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
 		GLUT myGLUT = new GLUT();
@@ -114,7 +131,71 @@ public class DojoEnemy extends DojoObject{
 //		GLUT myGLUT= new GLUT();
 //		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "HP: "+health);
 	}
-	public void update(){
+	public void update(DojoPlayer p, KruskyKrab k){
+		setPath(p,k);
+	}public void setPath(DojoPlayer p, KruskyKrab k){
+		if(!enroute){
+			if(Math.sqrt(Math.pow(p.getPos()[0]-this.getPos()[0], 2)+Math.pow(p.getPos()[1]-this.getPos()[1], 2))<k.size*7){
+				int c1=findCell(p.getPos()[0], p.getPos()[1], k.cells);
+				int c2=findCell(this.getPos()[0], this.getPos()[1], k.cells);
+				int next = dijkstras(c1,c2,k.adj);
+				//int next=10;
+				setDest(k.cells[next].x+k.cells[next].width/2,k.cells[next].y+k.cells[next].height/2);	
+			}
+		}
+	}public void setDest(double x, double y){
+		destX=x;
+		destY=y;
+		enroute=true;
+	}
+	
+	public static int findCell(double x, double y, DojoCell[] cells){
+		for(int i=0;i<cells.length;i++){
+			if(x>=cells[i].x&&cells[i].x+cells[i].width>=x&&y>=cells[i].y&&cells[i].y+cells[i].height>=y)return i;
+		}
+		return 0;
+	}public int dijkstras(int start, int end, int[][] mat){
+		boolean[] checked=new boolean[mat.length];
+		int[] prev=new int[mat.length];
+		double[] dists=new double[mat.length];
+		int curr=start;
+		checked[curr]=true;
+		while(curr!=end){
+			//System.out.println(curr);
+			for(int i=0;i<mat.length;i++){
+				if(mat[curr][i]!=0&&!checked[i]&&curr!=i){
+					double temp=dists[curr]+mat[curr][i];
+					if(dists[i]==0||temp<dists[i]){
+						dists[i]=temp;
+						prev[i]=curr;
+					}
+				}
+			}
+			double temp=Integer.MAX_VALUE;
+			int index=curr;
+			for(int i=0;i<dists.length;i++){
+				if(!checked[i]&&dists[i]>0&&dists[i]<temp){
+					temp=dists[i];
+					index=i;
+				}
+				
+			}
+			curr=index;
+			checked[curr]=true;
+		}
 		
+		ArrayList<Integer> path=new ArrayList<Integer>();
+		curr=end;
+		path.add(curr);
+		while(curr!=start){
+			path.add(prev[curr]);
+			curr=prev[curr];
+		}
+//		for(int i=0;i<path.size();i++)System.out.print(path.get(i)+" ");
+//		System.out.println();
+		if(path.size()>1)return path.get(1);
+		return path.get(0);
+		//this.path=path;
+		//return start;
 	}
 }

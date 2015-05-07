@@ -14,6 +14,7 @@ public class KruskyKrab extends Canvas{
 	DojoCell[] cells;
 	ArrayList<Integer> xs=new ArrayList<Integer>();
 	ArrayList<Integer> ys=new ArrayList<Integer>();
+	int[][] adj;
 	double size=10;
 	int n=10;
 	public KruskyKrab(double size,int n){
@@ -36,7 +37,7 @@ public class KruskyKrab extends Canvas{
 		edges=new DojoWall[2*n*(n+1)];
 		for(int i=0;i<n;i++){
 			for(int j=0;j<n;j++){
-				cells[n*i+j]=new DojoCell(size*i,size*j,size,size);
+				cells[n*i+j]=new DojoCell(size*i-n*size/2,size*j-n*size/2,size,size,n*j+i);
 				LinkedList<DojoCell> l=new LinkedList<DojoCell>();
 				l.add(cells[n*i+j]);
 				joined.add(l);
@@ -114,8 +115,30 @@ public class KruskyKrab extends Canvas{
 			nums.remove(lol);
 		}
 		
-		
-		
+		for(int i=0;i<2*n;i++){ //remove some random walls in the existing maze
+    		int ran=(int)(Math.random()*2*n*(n+1));
+	      	if(!edges[ran].joined){
+	      		edges[ran].joined=true;
+	      	}else{
+	      		i--;
+	      	}
+    	}
+		//System.out.println(n);
+	//	System.out.println();
+		adj=new int[n*n][n*n];
+		for(int i=0;i<edges.length;i++){
+			if(edges[i].joined&&edges[i].c1!=null&&edges[i].c2!=null){
+				adj[edges[i].c1.id][edges[i].c2.id]=1;
+				adj[edges[i].c2.id][edges[i].c1.id]=1;
+				//System.out.println(edges[i].c1.id+" "+edges[i].c2.id);
+			}
+		}
+//		for(int[] i:adj){
+//			for(int j:i){
+//				System.out.print(j+" ");
+//			}
+//			System.out.println();
+//		}
 	}
 
 }

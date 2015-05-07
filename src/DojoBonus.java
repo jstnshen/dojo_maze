@@ -46,12 +46,7 @@ public class DojoBonus extends DojoObject{
 	public void setActivationZone(double activationZone) {
 		this.activationZone = activationZone;
 	}
-	public void setDamage(int newDamage){
-		damage= newDamage;
-	}
-	public int getDamage(){
-		return damage;
-	}
+
 
 	public long getDuration() {
 		return duration;
@@ -63,9 +58,9 @@ public class DojoBonus extends DojoObject{
 	}
 
 	public void activate(DojoPlayer p){ 
-		//TODO
+
 	}
-	public void deactivate(){ //TODO
+	public void deactivate(){
 		
 	}
 
@@ -75,13 +70,7 @@ public class DojoBonus extends DojoObject{
 		GLUT myGLUT = new GLUT();
 		myGLUT.glutSolidSphere(getSize(), 50, 50);
 		myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
-		
-//		myGL.glBegin(GL.GL_QUADS);
-//		myGL.glVertex3f((float) -getSize(), (float) -getSize(), 0);
-//		myGL.glVertex3f((float) -getSize(), (float) getSize(), 0);
-//		myGL.glVertex3f((float) getSize(), (float) getSize(), 0);
-//		myGL.glVertex3f((float) getSize(), (float) -getSize(), 0);
-//		myGL.glEnd();
+
 		myGL.glPopMatrix();
 		
 	}
