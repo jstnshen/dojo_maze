@@ -226,7 +226,7 @@ public class DojoRenderer extends GLCanvas{
               @Override
               /**
                * mouseWheelMoved method used to detect the direction and amount of mouse scroll;
-               * the method adjust the camera position (player.getDir()[2]om) according to the mouse scroll
+               * the method adjust the camera position (player.getDir()[2]) according to the mouse scroll
                */
               public void mouseWheelMoved(MouseWheelEvent e) {
                   int change = e.getWheelRotation(); //how much the mouse wheel is scrolled (and direction)
@@ -402,7 +402,7 @@ public class DojoRenderer extends GLCanvas{
         	anim.stop();
 		}
 		if(gameLost){
-			displayMessage(myGL, "You Lost :( (Press Space to play again)");
+			displayMessage(myGL, "You Lost :( (Press 'p' to play again)");
 			reset();
         	anim.stop();
 		}
@@ -424,10 +424,10 @@ public class DojoRenderer extends GLCanvas{
 		gl.glRasterPos2f(getWidth()/2-180, getHeight()/2);
 		GLUT myGLUT= new GLUT();
 		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, msg);
+	//	System.out.println(myGLUT.glutStrokeLength(GLUT.BITMAP_TIMES_ROMAN_24, msg));
     }
     public static void main(String[] args){
         JFrame frame= new JFrame("Dojo Entertainment"); //create frame
-        //create and add GLCanvas subclass to frame
         GLCapabilities cap= new GLCapabilities();
         DojoRenderer myCanvas = new DojoRenderer(cap);    
         JPanel panel= new JPanel();
@@ -440,7 +440,7 @@ public class DojoRenderer extends GLCanvas{
         frame.add(panel);
         //set up frame
         frame.setSize(1000, 1000);
-        frame.setCursor(frame.getToolkit().createCustomCursor( //make mouse invisable
+        frame.setCursor(frame.getToolkit().createCustomCursor( //make mouse invisible
                 new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
                 "null"));
         frame.setVisible(true);
@@ -552,7 +552,7 @@ public class DojoRenderer extends GLCanvas{
 			if(down[i]==KeyEvent.VK_A && !player.getState()){//move right
 				boolean moveX=true;
 				boolean moveY=true;
-				System.out.println((x/dist2)*(x/dist2)+(y/dist2)*(y/dist2));
+
 				if(moveX){
 					player.getPos()[0]+=x/dist2;
 				//	player.getDir()[0]+=x/100*radius/30;

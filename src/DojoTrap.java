@@ -39,7 +39,7 @@ public class DojoTrap extends DojoObject{
 		double dy = p.getPos()[1]-getPos()[1];
 		double dz = p.getPos()[2]-getPos()[2];
 		double dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
-		if(dist<=activationZone && Math.random() > 0.97){
+		if(dist<=activationZone && Math.random() > 0.99){
 			return true;
 		}
 		return false;

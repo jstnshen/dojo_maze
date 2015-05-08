@@ -1,8 +1,12 @@
 Instruction
-Objective: +
-Controls:
-W - move forward
-S - move backward
-P - pause
-R - reset game
-ESC - exit game
+Objective: Find the exit of the maze to proceed to next level. In the maze, you will encounter various obstacles and .....
+Key Controls:
+W 			move forward
+S 			move backward
+A 			move left
+D 			move right
+SPACE		jump
+P 			pause
+ENTER		continue
+R 			reset game
+ESC			exit game
