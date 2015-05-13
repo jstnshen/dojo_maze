@@ -16,14 +16,16 @@ public class DojoEnemy extends DojoObject{
 	private boolean enroute=false;
 	private double destX=0;
 	private double destY=0;
+	DojoShape shape;
 	private ArrayList<Integer> path;
-	public DojoEnemy(double radius, double x, double y, double z){
+	public DojoEnemy(double radius, double x, double y, double z, DojoShape shape){
 		super();
+		this.shape=shape;
 		xDirection=1;
 		yDirection =0 ;
 		zDirection=0;
 		setPos(new double[]{x,y,z});
-		speed = 1;
+		speed = .5;
 		length= radius;//this will be default radus of the basic enemy
 		width = 1;
 		height= 1;
@@ -112,7 +114,8 @@ public class DojoEnemy extends DojoObject{
 		myGL.glPushMatrix();
 		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
 		GLUT myGLUT = new GLUT();
-		myGLUT.glutSolidSphere(length, 50, 50);
+		shape.draw(myGL);
+		//myGLUT.glutSolidSphere(length, 50, 50);
 		myGL.glPopMatrix();
 		
 	}
@@ -135,7 +138,7 @@ public class DojoEnemy extends DojoObject{
 		setPath(p,k);
 	}public void setPath(DojoPlayer p, KruskyKrab k){
 		if(!enroute){
-			if(Math.sqrt(Math.pow(p.getPos()[0]-this.getPos()[0], 2)+Math.pow(p.getPos()[1]-this.getPos()[1], 2))<k.size*7){
+			if(Math.sqrt(Math.pow(p.getPos()[0]-this.getPos()[0], 2)+Math.pow(p.getPos()[1]-this.getPos()[1], 2))<k.size*k.n/5){
 				int c1=findCell(p.getPos()[0], p.getPos()[1], k.cells);
 				int c2=findCell(this.getPos()[0], this.getPos()[1], k.cells);
 				int next = dijkstras(c1,c2,k.adj);

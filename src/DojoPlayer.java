@@ -13,6 +13,8 @@ public class DojoPlayer extends DojoObject{
 	private int health;
 	private int type;
 	private int bulletLeft;
+	private int demolitionLeft;
+	private int creationLeft;
 	private boolean isAnimated; //true if the player is in an animated sequence (not controlled by keyboard)
 	private boolean isJumping; //true if the player is in a jumping sequence
 	private boolean isInvulnerable; //true if the player just got damaged 
@@ -26,6 +28,8 @@ public class DojoPlayer extends DojoObject{
 		damage=9001;
 		health= 84;
 		bulletLeft=10;
+		demolitionLeft=1;
+		creationLeft =1;
 		setSize(length);
 		isAnimated= false;
 		isJumping = false;
@@ -105,11 +109,33 @@ public class DojoPlayer extends DojoObject{
 	public int getBulletLeft(){
 		return bulletLeft;
 	}
+	public int getDemoLeft(){
+		return demolitionLeft;
+	}
+	public void setDemoLeft(int n){
+		demolitionLeft=n;
+	}
+	public void setCreationLeft(int n){
+		creationLeft=n;
+	}
+	public int getCreationLeft(){
+		return creationLeft;
+	}
 	public void attack(){
 		if(bulletLeft>0){
 			bulletLeft--;
 		}
 		
+	}
+	public void destroy(){
+		if(demolitionLeft>0){
+			demolitionLeft--;
+		}	
+	}
+	public void create(){
+		if(creationLeft>0){
+			creationLeft--;
+		}
 	}
 	@Override
 	public void draw(GL myGL){
@@ -132,7 +158,7 @@ public class DojoPlayer extends DojoObject{
 
 		myGL.glRasterPos2f(health*2, 0);
 		GLUT myGLUT= new GLUT();
-		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "HP: "+health);
+		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "HP: "+health +" Bullet Left:"+bulletLeft);
 	}
 	
 
