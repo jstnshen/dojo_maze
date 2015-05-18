@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -19,7 +20,6 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLException;
 import javax.media.opengl.glu.GLU;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -32,12 +32,9 @@ import com.sun.opengl.util.texture.TextureIO;
  * Justin Shen
  * Vijay Upadhya
  * 
- * TODO
-Goal by next week: traps, enemies, progression, shooting (everything but themes and graphics and UI)
-				new types of traps (projectile), set up dojoBonus
-Player ability:
-shoot (limited amount of ammo), jump, shield, special actions
-
+ * keeping track of what I changed: displayMessage(), main() (moved to new class), changed the message being displayed (removed '')\
+ * , removed intro=true from reset(), added a bunch of pics, changed keylistner with 'p', added paused, and modified doDisplay with paused
+ * moved escape key to KeyEvents instead of processEvents, moved reset there as well
  */
 public class DojoRenderer extends GLCanvas{
     public static final float SENSITIVITY= 10.0f; //higher number = more sensitive mouse movement
@@ -69,6 +66,7 @@ public class DojoRenderer extends GLCanvas{
     private boolean gameLost = false;
     private boolean gameWin= false;
     private boolean intro=true;
+    private boolean paused= false;
     DojoShape shape=new DojoShape("cube.txt");
     private boolean isShooting = false;
     private double minimapSize = 200;
@@ -82,9 +80,9 @@ public class DojoRenderer extends GLCanvas{
         anim = new Animator(this);
     	isDay=true;
     	level = 1;
-        reset(); //initiate camera settings
-        generateMaze(); 
-        createObjects(); //create objects in the game
+    	reset(); //initiate camera settings
+    	generateMaze(); 
+    	createObjects(); //create objects in the game
         //start openGL settings
         addGLEventListener(new GLEventListener(){ //add GL event listener to the canvas
             @Override
@@ -129,10 +127,23 @@ public class DojoRenderer extends GLCanvas{
         this.addKeyListener(new KeyAdapter(){ //implement KeyAdapter to detect key events
           	@Override
           	public void keyPressed(KeyEvent e){ //stores keys pressed for processing
-          		if(e.getKeyChar() =='p'){
-          			if(anim.isAnimating()) 	anim.stop();
-                	else anim.start();
+          		if(e.getKeyChar() == KeyEvent.VK_ESCAPE)//quit
+          			System.exit(0);
+          		if(e.getKeyChar() == 'p' || e.getKeyChar() == 'P'){
+          			if(anim.isAnimating()){
+          				paused = true;
+          				
+          			}
+                	else{
+                		paused = false;
+                		anim.start();
+                	}
 				}
+          		if(paused && (e.getKeyChar() == 'r' || e.getKeyChar() == 'R')){ //reset the camera to original setting
+          			reset(); //can only reset when paused
+            		paused = false;
+            		anim.start();
+          		}
           		int[] ndown=new int[down.length+1];
       			boolean adder=true;
   				for(int i=0;i<down.length;i++){
@@ -232,10 +243,8 @@ public class DojoRenderer extends GLCanvas{
               }
           });
 
-        
-        anim.start(); //start animator
+      	anim.start(); //start animator
     }
-
     /**
      * (re)set to the initial settings of the camera
      */
@@ -244,7 +253,7 @@ public class DojoRenderer extends GLCanvas{
     	gameWin=false;
     	mazeWin = false;
     	gameLost= false;
-    	intro=true;
+    //	intro=true;
     //	level=1;
     	player = new DojoPlayer();
     	//camera state reset
@@ -343,27 +352,31 @@ public class DojoRenderer extends GLCanvas{
 	        myGL.glPopMatrix();
         }
         switchto2D(myGL);
+        if(paused){
+        	displayMessage(myGL, "PAUSED (press p to resume, press r to restart level, and ESC to exit game)");
+        	anim.stop();
+        }
         player.displayStatus(myGL);
         drawHUD(myGL);
         if(intro){
-        	displayMessage(myGL, "WELCOME!");
+        	displayMessage(myGL, "WELCOME! Press ENTER to start your journey.");
 			//reset();
         	//anim.stop();
         }
 		if(gameWin){
-			displayMessage(myGL, "You Win! (Press 'p' to play again)");
+			displayMessage(myGL, "You Win! (Press p to play again)");
 			level = 1;
 			reset();
         	anim.stop();
 		}
 		if(mazeWin){
-			displayMessage(myGL, "You solved the maze! But can you solve the next one? (Press 'p' to continue)");
+			displayMessage(myGL, "You solved the maze! But can you solve the next one? (Press p to continue)");
 			level++;
 			reset();
         	anim.stop();
 		}
 		if(gameLost){
-			displayMessage(myGL, "You Lost :( (Press 'p' to play again)");
+			displayMessage(myGL, "You Lost :( (Press p to play again)");
 			reset();
         	anim.stop();
 		}
@@ -382,32 +395,14 @@ public class DojoRenderer extends GLCanvas{
 		gl.glEnd();
 		gl.glColor3f(1f, 1f, 1f);
 		//gl.glRasterPos2f(REFERENCE_X-180, REFERENCE_Y);
-		gl.glRasterPos2f(getWidth()/2-180, getHeight()/2);
+		
 		GLUT myGLUT= new GLUT();
+    	int stringLen = myGLUT.glutBitmapLength(GLUT.BITMAP_TIMES_ROMAN_24, msg);
+		gl.glRasterPos2f((getWidth()-stringLen)/2, getHeight()/2);
 		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, msg);
 	//	System.out.println(myGLUT.glutStrokeLength(GLUT.BITMAP_TIMES_ROMAN_24, msg));
     }
-    public static void main(String[] args){
-        JFrame frame= new JFrame("Dojo Entertainment"); //create frame
-        GLCapabilities cap= new GLCapabilities();
-        DojoRenderer myCanvas = new DojoRenderer(cap);    
-        JPanel panel= new JPanel();
-        panel.setLayout(new BorderLayout());
-//        panel.add(new JButton(),BorderLayout.PAGE_END);
-//        panel.add(new JButton(),BorderLayout.PAGE_START);
-//        panel.add(new JButton(),BorderLayout.LINE_END);
-//        panel.add(new JButton(),BorderLayout.LINE_START);
-        panel.add(myCanvas, BorderLayout.CENTER);
-        frame.add(panel);
-        //set up frame
-        frame.setSize(1000, 1000);
-        frame.setCursor(frame.getToolkit().createCustomCursor( //make mouse invisible
-                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
-                "null"));
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        myCanvas.requestFocus();
-    }
+  
 	/**
      * initiate game objects
      */
@@ -456,11 +451,6 @@ public class DojoRenderer extends GLCanvas{
         updateCamera();
         //process key events
     	for(int i=0;i<down.length;i++){
-    		if(down[i] == KeyEvent.VK_ESCAPE)//quit
-    			System.exit(0); 
-           	if(down[i] == KeyEvent.VK_R){ //reset the camera to original setting
-                reset();
-           	}
            	if(down[i] == KeyEvent.VK_SPACE){
            		player.jump();
            	}
@@ -524,7 +514,7 @@ public class DojoRenderer extends GLCanvas{
 				}
 				if(moveX)player.getPos()[0]-=dx/dist1;
 				if(moveY)player.getPos()[1]-=dy/dist1;
-//				System.out.println(Math.pow(dx/dist1,2) + Math.pow(dy/dist1,2));
+//				System.out.println(Math.pow(dx/dist1,2) + Math.pow(dy/dist1,2));//TODO
 				updateCamera();
 			}
 			if(down[i]==KeyEvent.VK_D && !player.getState()){//move right
@@ -555,20 +545,9 @@ public class DojoRenderer extends GLCanvas{
 				}
 				updateCamera();
 			}
-			if(down[i]==KeyEvent.VK_ENTER){
+			if(intro && down[i]==KeyEvent.VK_ENTER){
 				reset();
 				intro=false;
-			}
-			if(down[i]==KeyEvent.VK_Q){
-				if(player.getDemoLeft()>0){	
-					player.destroy();
-		    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 5, DojoProjectile.DOJO_PROJ_DEMO));
-				}
-			}
-			if(down[i]==KeyEvent.VK_E){
-				if(player.getCreationLeft()>0){
-					player.create();
-				}
 			}
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
          	   System.exit(1);
@@ -582,14 +561,14 @@ public class DojoRenderer extends GLCanvas{
      */
     public void generateMaze(){
     	maze= new KruskyKrab(30,5*(level-1)+15);//generate the initial maze
-    	for(int i=0;i<2*maze.n;i++){ //remove some random walls in the existing maze
-    		int ran=(int)(Math.random()*2*maze.n*(maze.n+1));
-	      	if(!maze.edges[ran].joined){
-	      		maze.edges[ran].joined=true;
-	      	}else{
-	      		i--;
-	      	}
-    	}
+//    	for(int i=0;i<2*maze.n;i++){ //remove some random walls in the existing maze
+//    		int ran=(int)(Math.random()*2*maze.n*(maze.n+1));
+//	      	if(!maze.edges[ran].joined){
+//	      		maze.edges[ran].joined=true;
+//	      	}else{
+//	      		i--;
+//	      	}
+//    	}
 
         mm=new DojoMinimap(maze,getWidth()-minimapSize-1,getHeight()-minimapSize-1,minimapSize);
     }
@@ -767,7 +746,7 @@ public class DojoRenderer extends GLCanvas{
     	myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,1f,0f,1f},0);
     	for(int i=0; i< bonus.size();i++){
     		bonus.get(i).draw(myGL);
-        	//detects enemy-bonus collision
+        	//detects player-bonus collision
         	if(Math.abs(bonus.get(i).getPos()[0]-player.getPos()[0]) < bonus.get(i).getSize() + player.getSize() &&
         			Math.abs(bonus.get(i).getPos()[1]-player.getPos()[1]) < bonus.get(i).getSize()+player.getSize() ){
         		bonus.get(i).activate(player,maze, proj);
@@ -854,7 +833,7 @@ public class DojoRenderer extends GLCanvas{
     	if(isShooting){
     		isShooting = false;
     		player.attack();
-    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 5, DojoProjectile.DOJO_PROJ_BASIC));
+    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 5,DojoProjectile.DOJO_PROJ_BASIC));
 
     	}
     	for(int i=0; i< enemies.size(); i++){
@@ -863,7 +842,7 @@ public class DojoRenderer extends GLCanvas{
         for(int i=0; i<traps.size(); i++){
          	if(traps.get(i).getType() == DojoTrap.DOJO_TRAP_SHOOTER && traps.get(i).attack(player)){
          		double[] dir= { player.getPos()[0], player.getPos()[1], player.getPos()[2]-traps.get(i).getSize()};
-         		proj.add(new DojoProjectile(2, traps.get(i).getPos()[0], traps.get(i).getPos()[1], traps.get(i).getPos()[2],dir, 2.5, DojoProjectile.DOJO_PROJ_BASIC));
+         		proj.add(new DojoProjectile(2, traps.get(i).getPos()[0], traps.get(i).getPos()[1], traps.get(i).getPos()[2],dir, 2.5,DojoProjectile.DOJO_PROJ_BASIC));
          	}
          	
         }
