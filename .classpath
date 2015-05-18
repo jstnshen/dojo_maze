@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/JOGL-JARS/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/JOGL-JARS/jogl.jar" sourcepath="/Volumes/Students/SShared/3DGraphics/JOGL/v1.1.1/src/jogl">
+	<classpathentry kind="lib" path="/JOGL JARS/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/JOGL JARS/jogl.jar" sourcepath="/Volumes/Students/SShared/3DGraphics/JOGL/v1.1.1/src/jogl/src">
 		<attributes>
 			<attribute name="javadoc_location" value="http://worldwind.arc.nasa.gov/java/jogl/docs/"/>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JOGL-JARS"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JOGL JARS"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

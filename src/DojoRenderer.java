@@ -690,7 +690,7 @@ public class DojoRenderer extends GLCanvas{
 			myGL.glVertex2d(px+2, py+2);
 			myGL.glVertex2d(px+2, py-2);
 			myGL.glEnd();
-		}
+		}mm.draw2(myGL);
 
 	}
     public void switchto2D(GL gl){
@@ -829,6 +829,7 @@ public class DojoRenderer extends GLCanvas{
     }
     public void updateObjects(){
     	player.update();
+    	maze.cells[findCell(player.getPos()[0],player.getPos()[1],maze.cells)].visited=true;
     	if(player.getBulletLeft()<=0) isShooting = false;
     	if(isShooting){
     		isShooting = false;
@@ -869,6 +870,11 @@ public class DojoRenderer extends GLCanvas{
 			if(x1+dx<x2)return true;
 			return false;
 		}
+	}public static int findCell(double x, double y, DojoCell[] cells){
+		for(int i=0;i<cells.length;i++){
+			if(x>=cells[i].x&&cells[i].x+cells[i].width>=x&&y>=cells[i].y&&cells[i].y+cells[i].height>=y)return i;
+		}
+		return 0;
 	}
 
 }

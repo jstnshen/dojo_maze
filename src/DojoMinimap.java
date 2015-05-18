@@ -34,12 +34,39 @@ public class DojoMinimap extends Canvas{
 		for(int i=0;i<maze.edges.length;i++){
 			if(!maze.edges[i].joined){
 				//g.drawLine((int)(maze.edges[i].x1*scale),(int) (maze.edges[i].y1*scale),(int)( maze.edges[i].x2*scale), (int)(maze.edges[i].y2*scale));
-				gl.glColor3f(1f, 1f, 1f);
+				gl.glColor3f(0f, 0f, 0f);
 				gl.glBegin(gl.GL_LINES);
 				gl.glVertex2d((maze.edges[i].x2+maze.n*maze.size/2)*scale+xPos, (maze.edges[i].y2+maze.n*maze.size/2)*scale+yPos);
 				gl.glVertex2d((maze.edges[i].x1+maze.n*maze.size/2)*scale+xPos, (maze.edges[i].y1+maze.n*maze.size/2)*scale+yPos);
 				gl.glEnd();
 			}
 		}
+		for(int i=0;i<maze.cells.length;i++){
+			if(maze.cells[i].visited){
+				gl.glColor3f(1f, 1f, 1f);
+				gl.glBegin(gl.GL_QUADS);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2)*scale+yPos);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2+maze.cells[i].width)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2)*scale+yPos);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2+maze.cells[i].width)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2+maze.cells[i].height)*scale+yPos);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2+maze.cells[i].height)*scale+yPos);
+				gl.glEnd();
+			}
+		}
+		
+	}
+	public void draw2(GL gl){
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0.0f,0.0f,0.0f,1f},0); 
+		for(int i=0;i<maze.cells.length;i++){
+			if(!maze.cells[i].visited){
+				gl.glColor3f(0f, 0f, 0f);
+				gl.glBegin(gl.GL_QUADS);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2)*scale+yPos);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2+maze.cells[i].width)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2)*scale+yPos);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2+maze.cells[i].width)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2+maze.cells[i].height)*scale+yPos);
+				gl.glVertex2d((maze.cells[i].x+maze.n*maze.size/2)*scale+xPos, (maze.cells[i].y+maze.n*maze.size/2+maze.cells[i].height)*scale+yPos);
+				gl.glEnd();
+			}
+		}
+		
 	}
 }
