@@ -497,7 +497,7 @@ public class DojoRenderer extends GLCanvas{
 				}
 				if(moveX)player.getPos()[0]+=dx/dist1;
 				if(moveY)player.getPos()[1]+=dy/dist1;
-				System.out.println(Math.pow(dx/dist1,2) + Math.pow(dy/dist1,2));//TODO
+//				System.out.println(Math.pow(dx/dist1,2) + Math.pow(dy/dist1,2));//TODO
 				updateCamera();
 			}
 			if(down[i]==KeyEvent.VK_S && !player.getState()){//move backward
@@ -524,7 +524,7 @@ public class DojoRenderer extends GLCanvas{
 				}
 				if(moveX)player.getPos()[0]-=dx/dist1;
 				if(moveY)player.getPos()[1]-=dy/dist1;
-				System.out.println(Math.pow(dx/dist1,2) + Math.pow(dy/dist1,2));//TODO
+//				System.out.println(Math.pow(dx/dist1,2) + Math.pow(dy/dist1,2));
 				updateCamera();
 			}
 			if(down[i]==KeyEvent.VK_D && !player.getState()){//move right
@@ -558,6 +558,17 @@ public class DojoRenderer extends GLCanvas{
 			if(down[i]==KeyEvent.VK_ENTER){
 				reset();
 				intro=false;
+			}
+			if(down[i]==KeyEvent.VK_Q){
+				if(player.getDemoLeft()>0){	
+					player.destroy();
+		    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 5, DojoProjectile.DOJO_PROJ_DEMO));
+				}
+			}
+			if(down[i]==KeyEvent.VK_E){
+				if(player.getCreationLeft()>0){
+					player.create();
+				}
 			}
             if(down[i]==KeyEvent.VK_ESCAPE){//quit
          	   System.exit(1);
@@ -843,7 +854,7 @@ public class DojoRenderer extends GLCanvas{
     	if(isShooting){
     		isShooting = false;
     		player.attack();
-    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 5));
+    		proj.add(new DojoProjectile(2, player.getPos()[0], player.getPos()[1], player.getPos()[2],player.getDir(), 5, DojoProjectile.DOJO_PROJ_BASIC));
 
     	}
     	for(int i=0; i< enemies.size(); i++){
@@ -852,7 +863,7 @@ public class DojoRenderer extends GLCanvas{
         for(int i=0; i<traps.size(); i++){
          	if(traps.get(i).getType() == DojoTrap.DOJO_TRAP_SHOOTER && traps.get(i).attack(player)){
          		double[] dir= { player.getPos()[0], player.getPos()[1], player.getPos()[2]-traps.get(i).getSize()};
-         		proj.add(new DojoProjectile(2, traps.get(i).getPos()[0], traps.get(i).getPos()[1], traps.get(i).getPos()[2],dir, 2.5));
+         		proj.add(new DojoProjectile(2, traps.get(i).getPos()[0], traps.get(i).getPos()[1], traps.get(i).getPos()[2],dir, 2.5, DojoProjectile.DOJO_PROJ_BASIC));
          	}
          	
         }

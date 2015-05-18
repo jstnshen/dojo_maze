@@ -4,10 +4,14 @@ import com.sun.opengl.util.GLUT;
 
 
 public class DojoProjectile extends DojoObject {
+	public static final int DOJO_PROJ_BASIC = 0;
+	public static final int DOJO_PROJ_DEMO = 1;
+
 	private double[] direction;
 	private double speed;
 	private int damage;
-	public DojoProjectile(double size, double x, double y, double z, double[] dir, double newSpeed){
+	private int type;
+	public DojoProjectile(double size, double x, double y, double z, double[] dir, double newSpeed, int newType){
 		super();
 		setPos(new double[]{x,y,z});
 		double dx =(dir[0]-getPos()[0]);
@@ -17,9 +21,16 @@ public class DojoProjectile extends DojoObject {
 		setDir(new double[]{dx/mag,dy/mag,dz/mag});
 		setSize(size);
 		speed=newSpeed;
+		damage = 5;
+		type = newType;
 
 	}
-
+	public int getType(){
+		return this.type;
+	}
+	public void setType(int newType){
+		type = newType;
+	}
 	public double getSpeed() {
 		return speed;
 	}
