@@ -13,7 +13,6 @@ public class DojoPlayer extends DojoObject{
 	private double speed;
 	private double accel;
 	private double length, width, height;
-	private int damage;
 	private int health;
 	private int type;
 	private int bulletLeft;
@@ -29,7 +28,6 @@ public class DojoPlayer extends DojoObject{
 		length= 5;
 		width = 1;
 		height= 1;
-		damage=9001;
 		health= 100;
 		bulletLeft=10;
 		demolitionLeft=1;
@@ -85,21 +83,23 @@ public class DojoPlayer extends DojoObject{
 	public void setHeight(double height) {
 		this.height = height;
 	}
-	public int getDamage() {
-		return damage;
-	}
-	public void setDamage(int damage) {
-		this.damage = damage;
-	}
 	public int getHealth() {
 		return health;
 	}
-	public void setHealth(int health) {
+	public void setHealth(int newHealth) {
 		if(! isInvulnerable){
-			this.health = health;
+			this.health = newHealth;
 			isInvulnerable = true;
 		}
-		
+
+	}
+
+	/**
+	 * use to add health only
+	 * @param healthGain amount of health you gain
+	 */
+	public void addHealth(int healthGain){
+		this.health+= healthGain; 
 	}
 	public int getType() {
 		return type;

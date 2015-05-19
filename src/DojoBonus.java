@@ -58,7 +58,7 @@ public class DojoBonus extends DojoObject{
 	public void activate(DojoPlayer p, KruskyKrab m, ArrayList<DojoProjectile> proj){
 		switch(getType()){
 		case DOJO_BONUS_BASIC:
-			p.setHealth(p.getHealth()+ getHealth());
+			p.addHealth(getHealth());
 			break;
 		case DOJO_BONUS_DEMOLITION :
 			p.setDemoLeft(p.getDemoLeft()+ 1);
@@ -95,6 +95,8 @@ if(proj.get(i).getType() == DEMO && ! maze.edges[index].joined) {
 
 	public void draw(GL myGL, boolean draw){
 		if(draw){
+			if(getType() == DOJO_BONUS_BASIC) myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,0f,1f},0);
+			//if(getType() == DOJO_BONUS_AMMO) myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,.5f,1f,1f},0);
 			myGL.glPushMatrix();
 			myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
 			GLUT myGLUT = new GLUT();

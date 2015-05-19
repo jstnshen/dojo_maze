@@ -120,7 +120,10 @@ public class DojoEnemy extends DojoObject{
 		GLUT myGLUT = new GLUT();
 		if(draw){
 			if(health>=10)myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0);
-			else myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,0f,0f,1f},0);
+			else {
+				myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,0f,0f,1f},0);
+				speed=.1;
+			}
 			shape.draw(myGL);
 		}
 		//myGLUT.glutSolidSphere(length, 50, 50);

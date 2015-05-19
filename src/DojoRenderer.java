@@ -279,6 +279,7 @@ public class DojoRenderer extends GLCanvas{
     //	intro=true;
     //	level=1;
     	player = new DojoPlayer();
+    	player.setBulletLeft(player.getBulletLeft()+5*level);
     	//camera state reset
         radius = 25;
         theta=0; 
@@ -395,6 +396,7 @@ public class DojoRenderer extends GLCanvas{
 		if(mazeWin){
 			displayMessage(myGL, "You solved the maze! But can you solve the next one? (Press p to continue)");
 			level++;
+			theme++;
 			if(level==1){
 				text=null;
 				text=text1;
@@ -774,17 +776,17 @@ public class DojoRenderer extends GLCanvas{
 			myGL.glVertex2d(px+2, py-2);
 			myGL.glEnd();
 		}
-		for(int i=0;i<proj.size();i++){
-			px=(proj.get(i).getPos()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
-			py=(proj.get(i).getPos()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
-			myGL.glColor3f(1f,1f,1f);
-			myGL.glBegin(GL.GL_QUADS);
-			myGL.glVertex2d(px-2, py-2);
-			myGL.glVertex2d(px-2, py+2);
-			myGL.glVertex2d(px+2, py+2);
-			myGL.glVertex2d(px+2, py-2);
-			myGL.glEnd();
-		}
+//		for(int i=0;i<proj.size();i++){
+//			px=(proj.get(i).getPos()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
+//			py=(proj.get(i).getPos()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
+//			myGL.glColor3f(1f,1f,1f);
+//			myGL.glBegin(GL.GL_QUADS);
+//			myGL.glVertex2d(px-2, py-2);
+//			myGL.glVertex2d(px-2, py+2);
+//			myGL.glVertex2d(px+2, py+2);
+//			myGL.glVertex2d(px+2, py-2);
+//			myGL.glEnd();
+//		}
 		for(int i=0;i<bonus.size();i++){
 			px=(bonus.get(i).getPos()[0]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getWidth()-minimapSize;
 			py=(bonus.get(i).getPos()[1]+maze.n*maze.size/2)*minimapSize/(maze.n*maze.size)+getHeight()-minimapSize;
@@ -832,9 +834,10 @@ public class DojoRenderer extends GLCanvas{
 		try {
 			text1=TextureIO.newTexture(new File("brickWall.jpg") , false);
 			text2=TextureIO.newTexture(new File("corn2.jpg") , false);
-			text3=TextureIO.newTexture(new File("snow.png") , false);
-			text4=TextureIO.newTexture(new File("matrix.jpg") , false);
-			text5=TextureIO.newTexture(new File("cloud.jpg") , false);
+			text3=TextureIO.newTexture(new File("snow.png") , false);	
+			text4=TextureIO.newTexture(new File("cloud.jpg") , false);
+			text5=TextureIO.newTexture(new File("matrix.jpg") , false);
+
 			
 		} catch (GLException e) {
 			e.printStackTrace();
