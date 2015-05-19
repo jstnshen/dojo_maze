@@ -7,7 +7,7 @@ import java.util.LinkedList;
 public class DojoCell extends DojoObject implements Comparable{
 	double x,y,width,height=0;
 	int id=0;
-	boolean visited=false; // only cells that are visited will be displayed on minimap
+	boolean visited=false;
 	LinkedList<DojoCell> list=new LinkedList<DojoCell>();
 	public DojoCell(double x,double y, double width, double height,  int id){
 		this.x=x;

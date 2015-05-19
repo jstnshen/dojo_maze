@@ -3,9 +3,11 @@ import java.awt.Color;
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.texture.Texture;
+
+
 /**
  * Represent the walls in the maze. Contain information on size and location
- * @author Justin
+ * @author Justin and Vijay
  *
  */
 public class DojoWall extends DojoObject{
@@ -34,28 +36,31 @@ public class DojoWall extends DojoObject{
 		this.color = color;
 	}
 
-	public void draw(GL myGL,Texture text){
+	public void draw(GL myGL,Texture text, boolean draw){
 		//g.drawLine((int)maze.edges[i].x1, (int)maze.edges[i].y1, (int)maze.edges[i].x2, (int)maze.edges[i].y2);	
 		 //calculate the normal vector for each vertices of the side
-		float[] u = new float[]{0,-1,0};
-		float[] v = new float[]{-1,0,0};
-		myGL.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-		myGL.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-		text.enable();text.bind();
- 		myGL.glBegin(GL.GL_QUADS);
- 		if(x1==x2){
-        	myGL.glNormal3fv(u,0);
-        }else{
-        	myGL.glNormal3fv(v,0);
-        }
- 		myGL.glTexCoord2d(1,1);
-		myGL.glVertex3d(x1, y1, 0);
-		myGL.glTexCoord2d(1,0);
-		myGL.glVertex3d(x1, y1, length);
-		myGL.glTexCoord2d(0,0);
-		myGL.glVertex3d(x2, y2, length);
-		myGL.glTexCoord2d(0,1);
-		myGL.glVertex3d(x2, y2, 0);
-		myGL.glEnd();
+		if(draw){
+			float[] u = new float[]{0,-1,0};
+			float[] v = new float[]{-1,0,0};
+			myGL.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+			myGL.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+			text.enable();text.bind();
+	 		myGL.glBegin(GL.GL_QUADS);
+	 		if(x1==x2){
+	        	myGL.glNormal3fv(u,0);
+	        }else{
+	        	myGL.glNormal3fv(v,0);
+	        }
+	 		myGL.glTexCoord2d(1,1);
+			myGL.glVertex3d(x1, y1, 0);
+			myGL.glTexCoord2d(1,0);
+			myGL.glVertex3d(x1, y1, length);
+			myGL.glTexCoord2d(0,0);
+			myGL.glVertex3d(x2, y2, length);
+			myGL.glTexCoord2d(0,1);
+			myGL.glVertex3d(x2, y2, 0);
+			myGL.glEnd();
+			text.disable();
+		}
 	}
 }

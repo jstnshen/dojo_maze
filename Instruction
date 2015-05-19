@@ -1,5 +1,18 @@
 Instruction (Click anywhere on screen to return to menu)
-Objective: Find the exit of the maze to proceed to next level. In the maze, you will encounter various obstacles and .....
+
+Objective: Find the exit of the maze to proceed to next level. 
+In the maze, you will encounter various obstacles and enemies, but fear not, you are armed with ammunitions to
+fight against the enemies. There are also bonuses along the way to heal you or give you more ammo.
+Once you reach an exit, you will advance to the next level.
+
+There are five levels in total, each harder than the previous.
+The theme of each level are:
+level 1 - medieval castle
+level 2 - corn maze
+level 3 - snow maze
+level 4 - matrix
+level 5 - cloud maze
+
 Key Controls:
 W 			move forward
 S 			move backward
@@ -10,3 +23,7 @@ P 			pause
 ENTER			continue
 R 			reset game
 ESC			exit game
+
+Mouse Controls:
+-move mouse to change direction
+-left click to shoot ammo

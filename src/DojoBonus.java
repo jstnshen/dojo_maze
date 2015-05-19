@@ -4,6 +4,7 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
+
 /**
  * This class stores information about the bonuses in the game, including the bonus type, effects, and graphical info.
  * @author Justin and Vijay
@@ -11,38 +12,34 @@ import com.sun.opengl.util.GLUT;
  */
 public class DojoBonus extends DojoObject{
 	public static final int DOJO_BONUS_BASIC = 0; //health
-	public static final int DOJO_BONUS_AMMO = 4; //ammunition
-	//not implemented
 	public static final int DOJO_BONUS_DEMOLITION = 1; //ability to destroy wall
 	public static final int DOJO_BONUS_CREATION = 2; //ability to create wall
-	public static final int DOJO_BONUS_LIGHT = 3; //torch
-
+	public static final int DOJO_BONUS_LIGHT = 3;
+	public static final int DOJO_BONUS_AMMO = 4;
 	
 	private int type;
 	private int health;
 	private int bullet;
 
+	
+//	public DojoTrap(){
+//		super();
+//		type = DOJO_BONUS_BASIC;
+//		duration = 0;
+//		activationZone = 1;
+//	}
 	public DojoBonus(double size, double x, double y, double z){
 		super();
 		setPos(new double[]{x,y,z}); //x,y,z is the corner of the trap
 		setSize(size); //length of square
 		health = 20;
 		bullet = 5;
-		//type= DOJO_BONUS_BASIC;
 		int[] rand = {DOJO_BONUS_AMMO,DOJO_BONUS_BASIC};
 		type = rand[(int)(Math.random()*rand.length)];
 	}
-	/**
-	 * 
-	 * @return the amount of health the bonus restores
-	 */
 	public int getHealth(){
 		return this.health;
 	}
-	/**
-	 * set the amount of health the bonus restores
-	 * @param newHealth amount of health the bonus will restore
-	 */
 	public void setHealth(int newHealth){
 		this.health= newHealth;
 	}
@@ -63,7 +60,7 @@ public class DojoBonus extends DojoObject{
 		case DOJO_BONUS_BASIC:
 			p.setHealth(p.getHealth()+ getHealth());
 			break;
-		case DOJO_BONUS_DEMOLITION : 
+		case DOJO_BONUS_DEMOLITION :
 			p.setDemoLeft(p.getDemoLeft()+ 1);
 /*
  * 			
@@ -96,16 +93,16 @@ if(proj.get(i).getType() == DEMO && ! maze.edges[index].joined) {
 		this.type = type;
 	}
 
-	public void draw(GL myGL){
-		if(getType() == DOJO_BONUS_BASIC) myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,0f,1f},0);
-		myGL.glPushMatrix();
-		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
-		GLUT myGLUT = new GLUT();
-		myGLUT.glutSolidSphere(getSize(), 50, 50);
-		myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
-
-		myGL.glPopMatrix();
+	public void draw(GL myGL, boolean draw){
+		if(draw){
+			myGL.glPushMatrix();
+			myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
+			GLUT myGLUT = new GLUT();
+			myGLUT.glutSolidSphere(getSize(), 50, 50);
+			myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
+		
+			myGL.glPopMatrix();
+		}
 		
 	}
-
 }

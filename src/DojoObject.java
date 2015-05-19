@@ -12,15 +12,18 @@ import com.sun.opengl.util.texture.Texture;
 public class DojoObject {
 	private double[] position;
 	private Color color;
+	private Texture tex;
 	private double size;
 	public DojoObject(){
 		position = new double[]{0,0,0};
 		color= new Color(0,0,0);
+		tex= null;
 		size = 1;
 	}
-	public DojoObject(double[] newPos, Color newCol,  double newSize){
+	public DojoObject(double[] newPos, Color newCol, Texture newTex, double newSize){
 		position = newPos;
 		color= newCol;
+		tex= newTex;
 		size = newSize;
 	}
 	public double[] getPos() {
@@ -45,6 +48,12 @@ public class DojoObject {
 	public void setColor(Color color) {
 		this.color = color;
 	}
+	public Texture getTex() {
+		return tex;
+	}
+	public void setTex(Texture tex) {
+		this.tex = tex;
+	}
 	public boolean collision(DojoObject o){
 		return false;
 	}
@@ -61,7 +70,7 @@ public class DojoObject {
 		
 	}
 	/**
-	 * This method should be override; it simply draws a dot at the object's location
+	 * This method should be override to draw the component; it simply draws a dot at the object's location
 	 * @param myGL gl object that draws the dot
 	 */
 	public void draw(GL myGL){

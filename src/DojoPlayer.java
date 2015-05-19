@@ -16,7 +16,7 @@ public class DojoPlayer extends DojoObject{
 	private int damage;
 	private int health;
 	private int type;
-	private int bulletLeft; //number of bullets the player has left
+	private int bulletLeft;
 	private int demolitionLeft;
 	private int creationLeft;
 	private boolean isAnimated; //true if the player is in an animated sequence (not controlled by keyboard)
@@ -26,11 +26,11 @@ public class DojoPlayer extends DojoObject{
 		super();
 		speed = 10;
 		accel = -9;
-		length= 1;
+		length= 5;
 		width = 1;
 		height= 1;
 		damage=9001;
-		health= 84;
+		health= 100;
 		bulletLeft=10;
 		demolitionLeft=1;
 		creationLeft =1;
@@ -149,7 +149,11 @@ public class DojoPlayer extends DojoObject{
 		myGLUT.glutSolidSphere(getSize(), 50, 50);
 		myGL.glPopMatrix();
 	}
-	public void displayStatus(GL myGL){ //display player related status on the canvas
+	/**
+	 * display player related status on the canvas such as health and ammo left
+	 * @param myGL
+	 */
+	public void displayStatus(GL myGL){ 
 		//draw health bar
 		myGL.glColor3f(1f,0f,0f);
 		if(isInvulnerable) myGL.glColor3f(1,1,0);
@@ -172,7 +176,7 @@ public class DojoPlayer extends DojoObject{
 //		if(isAnimated && isJumping){
 //			
 //		}
-		if(isJumping){ //handles jumping animation
+		if(isJumping){
 			double dt =0.05;
 			speed += accel*dt; 
 			double dz = speed*dt;
@@ -183,7 +187,7 @@ public class DojoPlayer extends DojoObject{
 				isJumping = false;
 			}
 		}
-		if(isInvulnerable){ //handles invulnerability
+		if(isInvulnerable){
 			double dt =0.1;
 			speed += accel*dt; 
 			double dz = speed*dt;

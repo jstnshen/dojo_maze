@@ -15,14 +15,7 @@ public class DojoTrap extends DojoObject{
 	private int type;
 	private int damage;
 	private double activationZone;
-//	private int bulletLeft;
-	
-//	public DojoTrap(){
-//		super();
-//		type = DOJO_TRAP_BASIC;
-//		duration = 0;
-//		activationZone = 1;
-//	}
+
 	public DojoTrap(double size, double x, double y, double z){
 		super();
 		setPos(new double[]{x,y,z}); //x,y,z is the corner of the trap
@@ -33,7 +26,7 @@ public class DojoTrap extends DojoObject{
 		type= rand[(int)(Math.random()*rand.length)];
 	}
 	/**
-	 * allow DojoTrap to attack the player if the player is in range
+	 * allow DojoTrap to attack the player if tghe player is in range
 	 * @param p the DojoPlayer
 	 * @return true if the player is in range, else false
 	 */
@@ -70,23 +63,33 @@ public class DojoTrap extends DojoObject{
 	public int getDamage(){
 		return damage;
 	}
-	public void draw(GL myGL){
-		myGL.glPushMatrix();
-		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
-		GLUT myGLUT = new GLUT();
-		if(type == DOJO_TRAP_BASIC){
-			myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
-		}
-	
-		if(type ==DOJO_TRAP_SHOOTER ){
-			myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
+
+
+	public void draw(GL myGL, boolean draw){
+		if(draw){
+			myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0);
 			myGL.glPushMatrix();
-			myGL.glTranslated(0, 0, getSize());
-			myGLUT.glutSolidSphere(getSize()*0.1, 50, 50);
+			myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
+			GLUT myGLUT = new GLUT();
+			if(type == DOJO_TRAP_BASIC){
+				myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
+			}
+		
+			if(type ==DOJO_TRAP_SHOOTER ){
+				myGLUT.glutSolidTorus(getSize()*0.1, getSize(), 10, 10);
+				myGL.glPushMatrix();
+				myGL.glTranslated(0, 0, getSize());
+				myGLUT.glutSolidSphere(getSize()*0.1, 50, 50);
+				myGL.glPopMatrix();
+			}
+//			myGL.glBegin(GL.GL_QUADS);
+//			myGL.glVertex3f((float) -getSize(), (float) -getSize(), 0);
+//			myGL.glVertex3f((float) -getSize(), (float) getSize(), 0);
+//			myGL.glVertex3f((float) getSize(), (float) getSize(), 0);
+//			myGL.glVertex3f((float) getSize(), (float) -getSize(), 0);
+//			myGL.glEnd();
 			myGL.glPopMatrix();
 		}
-		myGL.glPopMatrix();
 		
 	}
-
 }

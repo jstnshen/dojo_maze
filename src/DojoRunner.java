@@ -65,26 +65,17 @@ public class DojoRunner extends JPanel implements Runnable {
 			play =  ImageIO.read(new File("play.png"));
 			build =  ImageIO.read(new File("build.png"));
 			help =  ImageIO.read(new File("help.png"));
-			background = ImageIO.read(new File("background.jpg"));
-//			background = ImageIO.read(new File("maze.jpg"));
+			String[] bg = {"background.jpg","maze.jpg","Cool-Wallpapers.jpg","Dragon-Zwart.jpg","France_maze.jpg","inception_maze.png.jpg"};
+			background = ImageIO.read(new File(bg[(int)(Math.random()*bg.length)]));
+
 			instruction = "\n\n\n";
 			Scanner sc = new Scanner(new File("Instruction"));
 			while(sc.hasNextLine()){
 				instruction+=("\t"+sc.nextLine()+"\n");
 			}
-
-			//BufferedImage tmp= ImageIO.read(new File("Clouds.jpg")); //holds the background image picture
-			//background= new BufferedImage(tmp.getWidth(),tmp.getHeight(),BufferedImage.TYPE_INT_ARGB); //allow the alpha to be manipulated
-			//background.getGraphics().drawImage(tmp, 0, 0, background.getWidth(), background.getHeight(), 0, 0, tmp.getWidth(), tmp.getHeight(), null);
-//			for(int i=0; i<scopes.length; i++){
-//				scopes[i]=ImageIO.read(new File("scope.png"));
-//				transparent(scopes[i]);
-//			}
-//				transparent(background);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//			readData();
 		addKeyListener(new KeyAdapter(){
 			public void keyPressed(KeyEvent ke){
 				if(ke.getKeyCode()==KeyEvent.VK_ESCAPE){
@@ -105,8 +96,6 @@ public class DojoRunner extends JPanel implements Runnable {
 				else
 					for(int i =0 ; i< buttons.length; i++){
 						if(buttons[i].contains(x,y)){
-	//						x=getWidth();
-	//						y=getHeight();
 							clicked = i;
 						}
 					}
@@ -231,7 +220,6 @@ public class DojoRunner extends JPanel implements Runnable {
 				}
 				else if(mode == MODE_PAUSE){
 					Thread.sleep(SLEEP_PAUSE);
-//						endingAnimation();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

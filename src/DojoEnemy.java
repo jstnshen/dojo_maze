@@ -30,11 +30,11 @@ public class DojoEnemy extends DojoObject{
 		zDirection=0;
 		setPos(new double[]{x,y,z});
 		speed = .5;
-		length= radius;
+		length= radius;//this will be default radus of the basic enemy
 		width = 1;
 		height= 1;
 		damage=21;
-		health= 42;
+		health= 10;
 		type= DOJO_ENEMY_BASIC;
 	}
 	public double getxDirection() {
@@ -97,8 +97,11 @@ public class DojoEnemy extends DojoObject{
 	public void setType(int type) {
 		this.type = type;
 	}
+	public void attack(DojoPlayer p){
+		
+	}
 
-	public void draw(GL myGL){
+	public void draw(GL myGL, boolean draw){
 
 		if(enroute){
 			if(Math.sqrt(Math.pow(getPos()[0]-destX,2)+Math.pow(getPos()[1]-destY,2))<=speed){
@@ -115,11 +118,16 @@ public class DojoEnemy extends DojoObject{
 		myGL.glPushMatrix();
 		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
 		GLUT myGLUT = new GLUT();
-		shape.draw(myGL);
+		if(draw){
+			if(health>=10)myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0f,1f,1f,1f},0);
+			else myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,0f,0f,1f},0);
+			shape.draw(myGL);
+		}
 		//myGLUT.glutSolidSphere(length, 50, 50);
 		myGL.glPopMatrix();
 		
 	}
+
 	/**
 	 * update the path the enemy will take
 	 * @param p Player the enemy is tracking
@@ -128,6 +136,7 @@ public class DojoEnemy extends DojoObject{
 	public void update(DojoPlayer p, KruskyKrab k){
 		setPath(p,k);
 	}
+
 	/**
 	 * set the path the enemy will take
 	 * @param p Player the enemy is tracking
