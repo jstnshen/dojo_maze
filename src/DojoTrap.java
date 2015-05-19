@@ -2,7 +2,11 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
-
+/**
+ * Represents the traps in the game. Traps can deal touch damage to the player or shoot projectiles
+ * @author Justin and Vijay
+ *
+ */
 public class DojoTrap extends DojoObject{
 	public static final int DOJO_TRAP_BASIC = 0;
 	public static final int DOJO_TRAP_SHOOTER = 1;
@@ -11,7 +15,6 @@ public class DojoTrap extends DojoObject{
 	private int type;
 	private int damage;
 	private double activationZone;
-	private long duration;
 //	private int bulletLeft;
 	
 //	public DojoTrap(){
@@ -24,13 +27,13 @@ public class DojoTrap extends DojoObject{
 		super();
 		setPos(new double[]{x,y,z}); //x,y,z is the corner of the trap
 		setSize(size); //length of square
-		duration = 0;
 		activationZone = size*20;
 		damage = 10;
-		type= DOJO_TRAP_SHOOTER;
+		int[] rand = {DOJO_TRAP_SHOOTER,DOJO_TRAP_BASIC};
+		type= rand[(int)(Math.random()*rand.length)];
 	}
 	/**
-	 * allow DojoTrap to attack the player if tghe player is in range
+	 * allow DojoTrap to attack the player if the player is in range
 	 * @param p the DojoPlayer
 	 * @return true if the player is in range, else false
 	 */
@@ -67,23 +70,6 @@ public class DojoTrap extends DojoObject{
 	public int getDamage(){
 		return damage;
 	}
-
-	public long getDuration() {
-		return duration;
-	}
-
-
-	public void setDuration(long duration) {
-		this.duration = duration;
-	}
-
-	public void activate(DojoPlayer p){ 
-		//TODO
-	}
-	public void deactivate(){ //TODO
-		
-	}
-
 	public void draw(GL myGL){
 		myGL.glPushMatrix();
 		myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
@@ -99,35 +85,8 @@ public class DojoTrap extends DojoObject{
 			myGLUT.glutSolidSphere(getSize()*0.1, 50, 50);
 			myGL.glPopMatrix();
 		}
-//		myGL.glBegin(GL.GL_QUADS);
-//		myGL.glVertex3f((float) -getSize(), (float) -getSize(), 0);
-//		myGL.glVertex3f((float) -getSize(), (float) getSize(), 0);
-//		myGL.glVertex3f((float) getSize(), (float) getSize(), 0);
-//		myGL.glVertex3f((float) getSize(), (float) -getSize(), 0);
-//		myGL.glEnd();
 		myGL.glPopMatrix();
 		
 	}
 
-//	public void draw(GL myGL){ //TODO
-//		if(type == DOJO_TRAP_BASIC){
-//		//	System.out.println(getPos()[0]+" "+getPos()[1]+" "+ getPos()[2]);
-//			myGL.glBegin(GL.GL_QUADS);
-//			myGL.glVertex3d(getPos()[0],getPos()[1], getPos()[2]);
-//			myGL.glVertex3d(getPos()[0]+getSize(),getPos()[1], getPos()[2]);
-//			myGL.glVertex3d(getPos()[0]+getSize(),getPos()[1]+getSize(), getPos()[2]);
-//			myGL.glVertex3d(getPos()[0],getPos()[1]+getSize(), getPos()[2]);
-//			
-//			myGL.glEnd();
-//	   //     myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{1f,0f,0f,1f},0); 
-//			myGL.glPushMatrix();
-//		//	myGL.glScaled(25, 25, 25);
-//			myGL.glTranslated(getPos()[0], getPos()[1], getPos()[2]);
-//			GLUT myGLUT = new GLUT();
-//			myGLUT.glutSolidSphere(getSize(), 100, 100);
-//			myGL.glPopMatrix();
-//		};
-//		if(type == DOJO_TRAP_SHOOTER);
-//		if(type == DOJO_TRAP_SPIN);
-//	}
 }

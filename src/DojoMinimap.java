@@ -4,7 +4,11 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.texture.Texture;
 
-
+/**
+ * This class handles minimap rendering 
+ * @author Justin and Vijay
+ *
+ */
 public class DojoMinimap extends Canvas{
 	
 	KruskyKrab maze;

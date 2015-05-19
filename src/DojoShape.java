@@ -5,7 +5,11 @@ import java.util.Scanner;
 
 import javax.media.opengl.GL;
 
-
+/**
+ * handles reading and loading obj files for enemy shape
+ * @author Justin and Vijay
+ *
+ */
 public class DojoShape {
 	double[][] vertices;
 	double[][] normals;

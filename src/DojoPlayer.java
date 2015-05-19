@@ -2,7 +2,11 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
-
+/**
+ * Stores information about the player
+ * @author Justin and Vijay
+ *
+ */
 public class DojoPlayer extends DojoObject{
 	private double[] direction; //direction the player is facing
 	private double[] up; //vector indicating the up vector for the player
@@ -12,7 +16,7 @@ public class DojoPlayer extends DojoObject{
 	private int damage;
 	private int health;
 	private int type;
-	private int bulletLeft;
+	private int bulletLeft; //number of bullets the player has left
 	private int demolitionLeft;
 	private int creationLeft;
 	private boolean isAnimated; //true if the player is in an animated sequence (not controlled by keyboard)
@@ -161,12 +165,14 @@ public class DojoPlayer extends DojoObject{
 		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "HP: "+health +" Bullet Left:"+bulletLeft);
 	}
 	
-
+	/**
+	 * update the status of the player when it is invulnerable or jumping
+	 */
 	public void update(){
 //		if(isAnimated && isJumping){
 //			
 //		}
-		if(isJumping){
+		if(isJumping){ //handles jumping animation
 			double dt =0.05;
 			speed += accel*dt; 
 			double dz = speed*dt;
@@ -177,7 +183,7 @@ public class DojoPlayer extends DojoObject{
 				isJumping = false;
 			}
 		}
-		if(isInvulnerable){
+		if(isInvulnerable){ //handles invulnerability
 			double dt =0.1;
 			speed += accel*dt; 
 			double dz = speed*dt;

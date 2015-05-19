@@ -3,7 +3,11 @@ import java.awt.Color;
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.texture.Texture;
-
+/**
+ * Represent the walls in the maze. Contain information on size and location
+ * @author Justin
+ *
+ */
 public class DojoWall extends DojoObject{
 
 	Color color;

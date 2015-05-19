@@ -2,7 +2,11 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
-
+/**
+ * Bullets that player and traps shoots
+ * @author Justin and Vijay
+ *
+ */
 public class DojoProjectile extends DojoObject {
 	public static final int DOJO_PROJ_BASIC = 0;
 	public static final int DOJO_PROJ_DEMO = 1;
@@ -51,6 +55,9 @@ public class DojoProjectile extends DojoObject {
 		myGLUT.glutSolidSphere(getSize(), 10, 10);
 		myGL.glPopMatrix();
 	}
+	/**
+	 * update the position of the bullet
+	 */
 	public void update(){
 		setPos(new double[]{getPos()[0]+getDir()[0]*speed, getPos()[1]+getDir()[1]*speed, getPos()[2]+getDir()[2]*speed});
 	}

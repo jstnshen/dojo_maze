@@ -27,14 +27,10 @@ import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.GLUT;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
-
-/*
- * Justin Shen
- * Vijay Upadhya
- * 
- * keeping track of what I changed: displayMessage(), main() (moved to new class), changed the message being displayed (removed '')\
- * , removed intro=true from reset(), added a bunch of pics, changed keylistner with 'p', added paused, and modified doDisplay with paused
- * moved escape key to KeyEvents instead of processEvents, moved reset there as well
+/**
+ * Renders and run the game
+ * @author Justin and Vijay
+ *
  */
 public class DojoRenderer extends GLCanvas{
     public static final float SENSITIVITY= 10.0f; //higher number = more sensitive mouse movement
@@ -384,6 +380,11 @@ public class DojoRenderer extends GLCanvas{
         switchto3D(myGL);
         
     }
+    /**
+     * display a message over the entire screen
+     * @param gl gl object used to display the message
+     * @param msg the message being display
+     */
     public void displayMessage(GL gl, String msg){
 		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[]{0.0f,0.0f,0.0f,1f},0); 
 		gl.glColor3f(0f, 0f, 0f);
@@ -613,6 +614,10 @@ public class DojoRenderer extends GLCanvas{
         myGL.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, new float[]{0, 0, 0, 1f}, 0);
         myGL.glPopMatrix();
     }
+    /**
+     * draws the minimap, player info, and enemies, traps, bonuses location
+     * @param myGL
+     */
     public void drawHUD(GL myGL) {
 		mm.draw(myGL);
 //		double px=(maze.n*maze.size/2+player.getPos()[0])*150d/(maze.n*maze.size)+450;
@@ -693,6 +698,10 @@ public class DojoRenderer extends GLCanvas{
 		}mm.draw2(myGL);
 
 	}
+    /**
+     * switch to 2D drawing
+     * @param gl
+     */
     public void switchto2D(GL gl){
     	gl.glDisable(GL.GL_DEPTH_TEST);
     	gl.glMatrixMode(GL.GL_PROJECTION);
@@ -704,6 +713,10 @@ public class DojoRenderer extends GLCanvas{
     	gl.glLoadIdentity();
 	}
 
+    /**
+     * switch to 3D drawing
+     * @param gl
+     */
 	public void switchto3D(GL gl){
     	gl.glEnable(GL.GL_DEPTH_TEST);
     	gl.glMatrixMode(GL.GL_PROJECTION);
@@ -711,6 +724,10 @@ public class DojoRenderer extends GLCanvas{
     	gl.glPopMatrix();
     	gl.glMatrixMode(GL.GL_MODELVIEW);
 	}
+	/**
+	 * load the texture for the maze
+	 * @param gl
+	 */
 	public void loadText(GL gl) {
 		try {
 			text=TextureIO.newTexture(new File("brickWall.jpg") , false);
@@ -827,6 +844,9 @@ public class DojoRenderer extends GLCanvas{
 //        player.draw(myGL);
         myGL.glPopMatrix();
     }
+    /**
+     * calls the update method of all the sprite in the game
+     */
     public void updateObjects(){
     	player.update();
     	maze.cells[findCell(player.getPos()[0],player.getPos()[1],maze.cells)].visited=true;
@@ -856,6 +876,7 @@ public class DojoRenderer extends GLCanvas{
     	}
     	
     }
+    
     public boolean isBetween(double x, double x1, double x2){
 		double low=Math.min(x1, x2);
 		double high=Math.max(x1, x2);

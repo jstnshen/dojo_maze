@@ -4,22 +4,23 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.texture.Texture;
 
-
+/**
+ * All 3d components to the game is a DojoObject
+ * @author Justin and Vijay
+ *
+ */
 public class DojoObject {
 	private double[] position;
 	private Color color;
-	private Texture tex;
 	private double size;
 	public DojoObject(){
 		position = new double[]{0,0,0};
 		color= new Color(0,0,0);
-		tex= null;
 		size = 1;
 	}
-	public DojoObject(double[] newPos, Color newCol, Texture newTex, double newSize){
+	public DojoObject(double[] newPos, Color newCol,  double newSize){
 		position = newPos;
 		color= newCol;
-		tex= newTex;
 		size = newSize;
 	}
 	public double[] getPos() {
@@ -44,12 +45,6 @@ public class DojoObject {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	public Texture getTex() {
-		return tex;
-	}
-	public void setTex(Texture tex) {
-		this.tex = tex;
-	}
 	public boolean collision(DojoObject o){
 		return false;
 	}
@@ -65,6 +60,10 @@ public class DojoObject {
 		else System.out.println("direction vector is invalid (move(): DojoObject)");
 		
 	}
+	/**
+	 * This method should be override; it simply draws a dot at the object's location
+	 * @param myGL gl object that draws the dot
+	 */
 	public void draw(GL myGL){
 		myGL.glPointSize((float) size);
 		myGL.glBegin(GL.GL_POINT);

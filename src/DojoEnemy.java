@@ -4,7 +4,11 @@ import javax.media.opengl.GL;
 
 import com.sun.opengl.util.GLUT;
 
-
+/**
+ * This class represents an enemy that can attack the player
+ * @author Justin and Vijay
+ *
+ */
 public class DojoEnemy extends DojoObject{
 	public static final int DOJO_ENEMY_BASIC = 0;
 	private double xDirection, yDirection, zDirection;
@@ -26,7 +30,7 @@ public class DojoEnemy extends DojoObject{
 		zDirection=0;
 		setPos(new double[]{x,y,z});
 		speed = .5;
-		length= radius;//this will be default radus of the basic enemy
+		length= radius;
 		width = 1;
 		height= 1;
 		damage=21;
@@ -93,9 +97,6 @@ public class DojoEnemy extends DojoObject{
 	public void setType(int type) {
 		this.type = type;
 	}
-	public void attack(DojoPlayer p){
-		
-	}
 
 	public void draw(GL myGL){
 
@@ -119,24 +120,20 @@ public class DojoEnemy extends DojoObject{
 		myGL.glPopMatrix();
 		
 	}
-
-	public void displayInfo(GL myGL){ //display info related to the enemy to the player
-		//draw health bar
-//		myGL.glColor3f(1f,0f,0f);
-//		myGL.glBegin(GL.GL_QUADS);
-//		myGL.glVertex2d(0, 0);
-//		myGL.glVertex2d(0, 20);
-//		myGL.glVertex2d(health*2, 20);
-//		myGL.glVertex2d(health*2, 0);
-//		myGL.glEnd();
-//
-//		myGL.glRasterPos2f(health*2, 0);
-//		GLUT myGLUT= new GLUT();
-//		myGLUT.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "HP: "+health);
-	}
+	/**
+	 * update the path the enemy will take
+	 * @param p Player the enemy is tracking
+	 * @param k the map
+	 */
 	public void update(DojoPlayer p, KruskyKrab k){
 		setPath(p,k);
-	}public void setPath(DojoPlayer p, KruskyKrab k){
+	}
+	/**
+	 * set the path the enemy will take
+	 * @param p Player the enemy is tracking
+	 * @param k the map
+	 */
+	public void setPath(DojoPlayer p, KruskyKrab k){
 		if(!enroute){
 			if(Math.sqrt(Math.pow(p.getPos()[0]-this.getPos()[0], 2)+Math.pow(p.getPos()[1]-this.getPos()[1], 2))<k.size*k.n/5){
 				int c1=findCell(p.getPos()[0], p.getPos()[1], k.cells);
@@ -157,7 +154,15 @@ public class DojoEnemy extends DojoObject{
 			if(x>=cells[i].x&&cells[i].x+cells[i].width>=x&&y>=cells[i].y&&cells[i].y+cells[i].height>=y)return i;
 		}
 		return 0;
-	}public int dijkstras(int start, int end, int[][] mat){
+	}
+	/**
+	 * Use dijkstras to determine the path from the enemy to the player
+	 * @param start location the
+	 * @param end
+	 * @param mat
+	 * @return
+	 */
+	public int dijkstras(int start, int end, int[][] mat){
 		boolean[] checked=new boolean[mat.length];
 		int[] prev=new int[mat.length];
 		double[] dists=new double[mat.length];

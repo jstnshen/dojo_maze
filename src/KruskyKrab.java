@@ -8,7 +8,11 @@ import java.util.LinkedList;
 
 import javax.swing.JFrame;
 
-
+/**
+ * This class handles random maze generation for the game
+ * @author Justin and Vijay
+ * 
+ */
 public class KruskyKrab extends Canvas{
 	DojoWall[] edges;
 	DojoCell[] cells;
@@ -30,7 +34,11 @@ public class KruskyKrab extends Canvas{
 			}
 			
 		});
-	}public void genMaze(){
+	}
+	/**
+	 * generate the maze
+	 */
+	public void genMaze(){
 		int counter=0;
 		ArrayList<LinkedList<DojoCell>> joined=new ArrayList<LinkedList<DojoCell>>();
 		cells=new DojoCell[n*n];
@@ -133,12 +141,7 @@ public class KruskyKrab extends Canvas{
 				//System.out.println(edges[i].c1.id+" "+edges[i].c2.id);
 			}
 		}
-//		for(int[] i:adj){
-//			for(int j:i){
-//				System.out.print(j+" ");
-//			}
-//			System.out.println();
-//		}
+
 	}
 
 }

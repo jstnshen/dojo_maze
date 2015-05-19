@@ -27,8 +27,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-
+/**
+ * 
+ * @author Justin and Vijay
+ * This class provides the user interface for the game and starts the game
+ */
 public class DojoRunner extends JPanel implements Runnable {
+	public static final long SLEEP_START=100; 
+	public static final long SLEEP_PAUSE=2000; 
+	public static final long SLEEP_DISPLAY=200; 
+	public static final int MODE_START=1; 
+	public static final int MODE_PAUSE=-1;
+	public static final int MODE_DISPLAY=0; 
+	
 	private Thread myThread;
 	private BufferedImage title;
 	private BufferedImage play;
@@ -38,33 +49,12 @@ public class DojoRunner extends JPanel implements Runnable {
 	private BufferedImage background;
 	private Image bgBuffer; // second image for double buffering
 	private Rectangle2D.Double[] buttons;
-	public static final long SLEEP_START=100; //sleep time when the mode is MODE_START
-	public static final long SLEEP_PAUSE=2000; //sleep time when the mode is MODE_END
-	public static final long SLEEP_DISPLAY=200; //sleep time when the mode is MODE_DISPLAY
-	public static final int MODE_START=1; //mode signifying the starting animation to run
-	public static final int MODE_PAUSE=-1; //mode signifying the ending animation to run
-	public static final int MODE_DISPLAY=0; //mode signifying data displaying
-	public static final int MESSAGE_SIZE =20;
+
 	private int mode;
 	private int clicked;
 	private String instruction;
 	private JScrollPane sp;
-	/*
-	 * preserve original aspect ratio
-	 */
-	public BufferedImage resize(BufferedImage pic, int newWidth){
-		double scale = (double)newWidth / (double)pic.getWidth();
-		BufferedImage tmp=  new BufferedImage((int)(pic.getWidth() *scale) ,(int)(pic.getHeight() *scale),BufferedImage.TYPE_INT_ARGB);
-		tmp.getGraphics().drawImage(pic, 0, 0, tmp.getWidth(), tmp.getHeight(), 0, 0, pic.getWidth(), pic.getHeight(), null);
-		return tmp;
-	}
-	public int getMode(){
-		return mode;
-	}
-	public void setMode(int newMode){
-		mode= newMode;
-	}
-	//public DojoUI(){
+
 	public DojoRunner(){
 		mode = MODE_START;
 		clicked = -1;
@@ -126,7 +116,19 @@ public class DojoRunner extends JPanel implements Runnable {
 		myThread= new Thread(this);
 		myThread.start();
 	}
-
+	/**
+	 * returns a resized version the given BufferedImage according to the given width, preserving the original aspect ratio
+	 * @param pic BufferedImage to be resize
+	 * @param newWidth width of the new BufferedImage
+	 * @return resized BufferedImage
+	 */
+	public BufferedImage resize(BufferedImage pic, int newWidth){
+		double scale = (double)newWidth / (double)pic.getWidth();
+		BufferedImage tmp=  new BufferedImage((int)(pic.getWidth() *scale) ,(int)(pic.getHeight() *scale),BufferedImage.TYPE_INT_ARGB);
+		tmp.getGraphics().drawImage(pic, 0, 0, tmp.getWidth(), tmp.getHeight(), 0, 0, pic.getWidth(), pic.getHeight(), null);
+		return tmp;
+	}
+	@Override
 	public void paint(Graphics g){
 		createBGBuffer();
 		paintOntoSomethingElse(bgBuffer.getGraphics());
@@ -138,6 +140,9 @@ public class DojoRunner extends JPanel implements Runnable {
 	public void update(Graphics g){
 		paint(g);
 	}
+	/**
+	 * create a new bgBuffer everytime the screen is resized
+	 */
 	public void createBGBuffer(){
 		if(bgBuffer==null
 				||bgBuffer.getWidth(null) != getWidth()
@@ -147,20 +152,14 @@ public class DojoRunner extends JPanel implements Runnable {
 	}
 	/**
 	 * Draws all the graphical elements of the project onto the bgBuffer
+	 * Also processes mouse clicks.
 	 * @param g graphics object used to draw on the canvas 
 	 */
 	public void paintOntoSomethingElse(Graphics g){
 		g.clearRect(0,0,getWidth(),getHeight());
 		//setBackground(Color.black);
 		Graphics2D g2 = (Graphics2D)g;
-		Font messageFont = new Font("Verdana", Font.BOLD, MESSAGE_SIZE);
-		g2.setFont(messageFont);
-		g2.setColor(Color.CYAN);
-		String message = "";
-		int xPos = 0;
-		int yPos = 0 ;
-		if(!message.equals(""))g2.drawString(message, xPos, yPos+g2.getFontMetrics().getMaxAscent());
-
+	
 		switch(clicked){
 		case 0 :
 			clicked = -1;
@@ -168,7 +167,7 @@ public class DojoRunner extends JPanel implements Runnable {
 		case 1 : //start the game
 			clicked = -1;
 	        GLCapabilities cap= new GLCapabilities();
-	        DojoRenderer game = new DojoRenderer(cap);
+	        DojoRenderer game = new DojoRenderer(cap); //initialize game
 			JPanel panel = (JPanel) getParent();
 			panel.getParent().setCursor(panel.getParent().getToolkit().createCustomCursor( //make mouse invisible
 	                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
@@ -179,10 +178,6 @@ public class DojoRunner extends JPanel implements Runnable {
 			panel.getParent().validate();
 			game.requestFocus();
 			break;
-		case 2 :
-			clicked = -1;
-			
-			break;
 		case 3 : //display instruction
 //			clicked = -1;
 			g2.setColor(Color.black);
@@ -191,7 +186,7 @@ public class DojoRunner extends JPanel implements Runnable {
 			JTextArea ta = new JTextArea();
 			ta.setEditable(false);
 			ta.setFont(new Font("Serif", Font.ITALIC, 16));
-			ta.append(instruction);
+			ta.append(instruction);//write instruction to the text area
 			
 			sp = new JScrollPane(ta);
 			sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -199,17 +194,18 @@ public class DojoRunner extends JPanel implements Runnable {
 			getParent().add(sp,BorderLayout.CENTER);
 			getParent().validate();
 			break;
-			default:
+			default: //draw the normal welcome screen
 				g2. setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); //enable anti-aliasing 
 				g2.drawImage(background, 0, 0, getWidth(), getHeight(), 0, 0, background.getWidth(), background.getHeight(), null);
 				g2.drawImage(title, (getWidth()-title.getWidth())/2, getHeight()/4, null);
 				g2.drawImage(present , (getWidth()-title.getWidth())/2, getHeight()/4-present.getHeight()-5, null);
 				g2.drawImage(play, (getWidth()-play.getWidth())/2, getHeight()/2, null);
-				g2.drawImage(build, (getWidth()-build.getWidth())/2, getHeight()/2+play.getHeight(), null);
+				//g2.drawImage(build, (getWidth()-build.getWidth())/2, getHeight()/2+play.getHeight(), null);
 				g2.drawImage(help, (getWidth()-help.getWidth())/2, getHeight()/2+play.getHeight()+build.getHeight(), null);
 				break;
 		}
 	}
+	@Override
 	public void run() {
 		while(Thread.currentThread() == myThread){
 			repaint();
@@ -218,7 +214,7 @@ public class DojoRunner extends JPanel implements Runnable {
 					Thread.sleep(SLEEP_DISPLAY);
 
 				}
-				else if(mode ==MODE_START && getWidth() != 0 && getHeight()!=0){
+				else if(mode ==MODE_START && getWidth() != 0 && getHeight()!=0){ //set the size of the buttons
 					Thread.sleep(SLEEP_START);
 					title = resize(title, getWidth()/2);
 					present = resize(present, getWidth()/4);
@@ -242,20 +238,12 @@ public class DojoRunner extends JPanel implements Runnable {
 			}
 		}
 	}
-//	}
+
 	  public static void main(String[] args){
 	        JFrame frame= new JFrame("Dojo Entertainment"); //create frame
-//	        GLCapabilities cap= new GLCapabilities();
-//	        DojoRenderer myCanvas = new DojoRenderer(cap);  
-//	        myCanvas.start();
 	        JPanel panel= new JPanel();
 	        panel.setLayout(new BorderLayout());
-//	        panel.add(new JButton(),BorderLayout.PAGE_END);
-//	        panel.add(new JButton(),BorderLayout.PAGE_START);
-//	        panel.add(new JButton(),BorderLayout.LINE_END);
-//	        panel.add(new JButton(),BorderLayout.LINE_START);
 	        
-
 	        DojoRunner myUI= new DojoRunner();
 	        panel.add(myUI,BorderLayout.CENTER);
 	        frame.add(panel);
@@ -263,13 +251,7 @@ public class DojoRunner extends JPanel implements Runnable {
 	        int width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	        int height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight(); 
 	        frame.setSize(width, height-35);
-//	        panel.remove(myUI);
-//	        panel.add(myCanvas, BorderLayout.CENTER);
-//	        frame.setCursor(frame.getToolkit().createCustomCursor( //make mouse invisible
-//	                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0),
-//	                "null"));
 	        frame.setVisible(true);
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    //    myCanvas.requestFocus();
 	    }
 }
